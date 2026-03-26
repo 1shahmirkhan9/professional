@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shahmir Khan — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --white:    #ffffff;
+  --off:      #f7f6f3;
+  --rule:     #e2dfd8;
+  --rule2:    #ede9e3;
+  --muted:    #9a948a;
+  --body:     #3d3830;
+  --heading:  #1a1714;
+  --ink:      #0e0c0a;
+  --gold:     #b8975a;
+  --gold-lt:  #d4b07a;
+  --gold-bg:  #f9f5ee;
+  --navy:     #1c2b3a;
+  --navy-lt:  #263a4d;
+  --green:    #2e6b4f;
+  --green-lt: #e8f3ee;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'IBM Plex Sans', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow:    0 4px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 15px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--navy);
+  color: var(--body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: inherit; text-decoration: none; }
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 5% 15%, rgba(184,151,90,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 70% at 95% 85%, rgba(20,30,40,0.9) 0%, transparent 60%),
+    linear-gradient(170deg, #1c2b3a 0%, #131d27 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: rgba(18,27,36,0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+}
+.topbar-brand {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.01em;
+}
+.topbar-brand span { color: var(--gold-lt); }
+.topbar-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.topbar-pill b { color: var(--gold-lt); font-weight: 500; }
+
+/* ── HERO ── */
+.hero {
+  padding: 88px 40px 68px;
+  position: relative;
+  z-index: 1;
+}
+.hero-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 56px;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 5.5vw, 66px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: fadeUp 0.65s 0.18s ease both;
+}
+.hero-name span { color: var(--gold); }
+.hero-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(15px, 1.8vw, 19px);
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255,255,255,0.32);
+  margin-bottom: 26px;
+  opacity: 0;
+  animation: fadeUp 0.65s 0.25s ease both;
+}
+.hero-bio {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.42);
+  max-width: 500px;
+  line-height: 1.85;
+  opacity: 0;
+  animation: fadeUp 0.65s 0.32s ease both;
+}
+.hero-bio strong { color: rgba(255,255,255,0.68); font-weight: 500; }
+
+/* Hero stat cluster */
+.hero-stats {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  flex-shrink: 0;
+  opacity: 0;
+  animation: fadeUp 0.65s 0.38s ease both;
+}
+.hero-stat {
+  padding: 18px 30px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.025);
+  text-align: center;
+  min-width: 148px;
+}
+.hero-stat:last-child { border-bottom: none; }
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.hero-stat-num sup { font-size: 14px; color: var(--gold-lt); vertical-align: super; }
+.hero-stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.22);
+}
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 40px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 36px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.55s 0.44s ease both;
+}
+.section-header-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  white-space: nowrap;
+}
+.section-header-rule { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+#count-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.16);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* ── SEARCH ── */
+.search-wrap {
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.5s ease both;
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.22);
+  font-size: 14px;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: var(--radius);
+  padding: 12px 18px 12px 42px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.search-input::placeholder { color: rgba(255,255,255,0.18); }
+.search-input:focus {
+  border-color: rgba(184,151,90,0.4);
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── GRID ── */
+.doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 18px;
+}
+
+/* ── CARD ── */
+.doc-card {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  padding: 26px 26px 22px;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.2s, border-color 0.2s, transform 0.22s, box-shadow 0.22s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.5s ease both;
+}
+.doc-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.doc-card:hover {
+  background: rgba(255,255,255,0.065);
+  border-color: rgba(184,151,90,0.28);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.doc-card:hover::after { opacity: 1; }
+
+.doc-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(184,151,90,0.1);
+  border: 1px solid rgba(184,151,90,0.18);
+  padding: 3px 9px;
+  border-radius: 3px;
+  align-self: flex-start;
+  margin-bottom: 18px;
+}
+.doc-icon { font-size: 26px; margin-bottom: 12px; line-height: 1; }
+.doc-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+.doc-desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.75;
+  flex: 1;
+  margin-bottom: 20px;
+}
+.doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  gap: 12px;
+}
+.doc-filename {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.16);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.doc-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  background: var(--gold);
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.doc-open-btn:hover { background: var(--gold-lt); }
+.arr { transition: transform 0.15s; display: inline-block; }
+.doc-card:hover .arr { transform: translateX(3px); }
+
+/* ── STATES ── */
+.state-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 72px 20px;
+}
+.state-icon { font-size: 38px; margin-bottom: 16px; display: block; opacity: 0.35; }
+.state-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 10px;
+}
+.state-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  line-height: 1.9;
+}
+.state-sub code {
+  display: inline-block;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 3px 10px;
+  border-radius: 3px;
+  color: var(--gold-lt);
+  font-size: 10px;
+  margin-top: 6px;
+}
+
+/* shimmer */
+.shimmer {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-lg);
+  height: 210px;
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  animation: shim 1.5s infinite;
+}
+@keyframes shim { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 28px 40px;
+  position: relative;
+  z-index: 1;
+}
+.footer-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.22);
+}
+.footer-brand span { color: rgba(212,176,122,0.5); }
+.footer-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.12);
+  letter-spacing: 0.06em;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: row; }
+  .hero-stat { border-bottom: none; border-right: 1px solid rgba(255,255,255,0.06); }
+  .hero-stat:last-child { border-right: none; }
+}
+@media (max-width: 640px) {
+  .hero, .content { padding-left: 20px; padding-right: 20px; }
+  .topbar, .footer { padding-left: 20px; padding-right: 20px; }
+  .hero-stats { display: none; }
+  .doc-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">Shahmir <span>Khan</span></div>
+    <div class="topbar-pill" id="topbar-pill">Loading…</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Personal Portfolio Hub</div>
+      <div class="hero-name">Shahmir <span>Khan</span></div>
+      <div class="hero-subtitle">Finance &amp; Strategy Professional</div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">2<sup>+</sup></div>
+        <div class="hero-stat-label">Yrs Experience</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">3<sup>+</sup></div>
+        <div class="hero-stat-label">Reports</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="hero-count">—</div>
+        <div class="hero-stat-label">Documents</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <div class="section-header">
+    <span class="section-header-text">Repository</span>
+    <div class="section-header-rule"></div>
+    <span id="count-label">—</span>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input class="search-input" id="search" type="text" placeholder="Search documents…" autocomplete="off">
+  </div>
+
+  <div class="doc-grid" id="doc-grid">
+    <div class="shimmer"></div>
+    <div class="shimmer"></div>
+    <div class="shimmer"></div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">Shahmir <span>Khan</span></div>
+    <div class="footer-note">Finance &amp; Strategy · IBA Karachi · Karachi, Pakistan</div>
+  </div>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  METADATA OVERRIDES
+//  When manifest.json lists a file, its title/description/type/
+//  icon will be enriched from this table if a match is found.
+//  Add an entry here for every HTML file in the repo.
+// ─────────────────────────────────────────────────────────────
+const META = {
+  "shahmir-khan-profile.html": {
+    title:       "Shahmir Khan — Profile",
+    description: "Professional profile covering development finance, credit risk, treasury management, and equity research experience.",
+    type:        "Profile",
+    icon:        "👤"
+  }
+  // Add more as you add files:
+  // "ogdc-report.html": { title: "OGDC — Company Update", description: "...", type: "Research", icon: "📊" },
+};
+
+// ─────────────────────────────────────────────────────────────
+//  FALLBACK — used if manifest.json doesn't exist yet
+// ─────────────────────────────────────────────────────────────
+const FALLBACK = [
+  { file: "shahmir-khan-profile.html" }
+];
+
+// ─────────────────────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────────────────────
+const inferType = f => {
+  f = f.toLowerCase();
+  if (f.includes('profile') || f.includes('cv') || f.includes('resume')) return 'Profile';
+  if (f.includes('report') || f.includes('research') || f.includes('update') || f.includes('sector')) return 'Research';
+  if (f.includes('deck') || f.includes('pitch') || f.includes('pres')) return 'Presentation';
+  if (f.includes('note') || f.includes('brief') || f.includes('memo')) return 'Note';
+  return 'Document';
+};
+const inferIcon = t => ({ Profile:'👤', Research:'📊', Presentation:'📋', Note:'📝', Document:'📄' }[t] || '📄');
+const humanise  = s => s.replace(/\.html?$/i,'').replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+const fmtDate   = iso => { try { return new Date(iso).toLocaleDateString('en-GB',{month:'short',year:'numeric'}); } catch{return '';} };
+
+// ─────────────────────────────────────────────────────────────
+//  ENRICH — merge raw file entry with META overrides
+// ─────────────────────────────────────────────────────────────
+function enrich(raw) {
+  const ov   = META[raw.file] || {};
+  const type = ov.type || raw.type || inferType(raw.file);
+  const icon = ov.icon || raw.icon || inferIcon(type);
+  return {
+    file:        raw.file,
+    title:       ov.title       || raw.title       || humanise(raw.file),
+    description: ov.description || raw.description || 'HTML document in the repository.',
+    type, icon,
+    date:        raw.modified   ? fmtDate(raw.modified) : (raw.date || '')
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────────────────────
+let ALL = [];
+
+function setCount(n) {
+  const word = n === 1 ? 'document' : 'documents';
+  document.getElementById('count-label').textContent   = n + ' ' + word;
+  document.getElementById('hero-count').textContent    = String(n);
+  document.getElementById('topbar-pill').innerHTML     = `<b>${n}</b> ${word}`;
+}
+
+function renderCards(docs) {
+  const grid = document.getElementById('doc-grid');
+  grid.innerHTML = '';
+
+  if (!docs.length) {
+    grid.innerHTML = `
+      <div class="state-msg">
+        <span class="state-icon">🔍</span>
+        <div class="state-title">No documents match</div>
+        <div class="state-sub">Try a different search term</div>
+      </div>`;
+    return;
+  }
+
+  docs.forEach((doc, i) => {
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.style.animationDelay = (i * 0.07) + 's';
+    card.innerHTML = `
+      <span class="doc-badge">${doc.type}</span>
+      <span class="doc-icon">${doc.icon}</span>
+      <div class="doc-title">${doc.title}</div>
+      <div class="doc-desc">${doc.description}</div>
+      <div class="doc-footer">
+        <span class="doc-filename">${doc.file}${doc.date ? ' · ' + doc.date : ''}</span>
+        <a class="doc-open-btn" href="${doc.file}" target="_blank" onclick="event.stopPropagation()">
+          Open <span class="arr">→</span>
+        </a>
+      </div>`;
+    card.addEventListener('click', () => window.open(doc.file, '_blank'));
+    grid.appendChild(card);
+  });
+}
+
+function boot(rawFiles) {
+  ALL = rawFiles.map(enrich);
+  setCount(ALL.length);
+  renderCards(ALL);
+
+  document.getElementById('search').addEventListener('input', function () {
+    const q = this.value.trim().toLowerCase();
+    renderCards(!q ? ALL : ALL.filter(d =>
+      d.title.toLowerCase().includes(q) ||
+      d.description.toLowerCase().includes(q) ||
+      d.type.toLowerCase().includes(q) ||
+      d.file.toLowerCase().includes(q)
+    ));
+  });
+}
+
+function noManifest() {
+  document.getElementById('doc-grid').innerHTML = `
+    <div class="state-msg">
+      <span class="state-icon">📂</span>
+      <div class="state-title">Add a manifest to auto-discover files</div>
+      <div class="state-sub">
+        Place this index.html in your repo folder, then run:<br>
+        <code>node generate-manifest.js</code><br>
+        Or add files manually to the FALLBACK list in index.html
+      </div>
+    </div>`;
+  setCount(0);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  BOOTSTRAP — fetch manifest.json → fallback → error state
+// ─────────────────────────────────────────────────────────────
+fetch('manifest.json?t=' + Date.now())
+  .then(r => { if (!r.ok) throw 0; return r.json(); })
+  .then(data => {
+    const files = Array.isArray(data) ? data : (data.files || []);
+    if (!files.length) throw 0;
+    boot(files);
+  })
+  .catch(() => {
+    FALLBACK.length ? boot(FALLBACK) : noManifest();
+  });
+</script>
+</body>
+</html>
