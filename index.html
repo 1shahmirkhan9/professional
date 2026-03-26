@@ -556,27 +556,28 @@ body::before {
 
 <script>
 // ─────────────────────────────────────────────────────────────
-//  METADATA OVERRIDES
-//  When manifest.json lists a file, its title/description/type/
-//  icon will be enriched from this table if a match is found.
-//  Add an entry here for every HTML file in the repo.
+//  FILES — add an entry here for every HTML file in the repo.
+//  This works when opened directly as a local file (no server
+//  needed). Just keep index.html in the same folder as the others.
 // ─────────────────────────────────────────────────────────────
-const META = {
-  "shahmir-khan-profile.html": {
+const FILES = [
+  {
+    file:        "shahmir-khan-profile.html",
     title:       "Shahmir Khan — Profile",
     description: "Professional profile covering development finance, credit risk, treasury management, and equity research experience.",
     type:        "Profile",
-    icon:        "👤"
+    icon:        "👤",
+    date:        "Mar 2026"
   }
-  // Add more as you add files:
-  // "ogdc-report.html": { title: "OGDC — Company Update", description: "...", type: "Research", icon: "📊" },
-};
-
-// ─────────────────────────────────────────────────────────────
-//  FALLBACK — used if manifest.json doesn't exist yet
-// ─────────────────────────────────────────────────────────────
-const FALLBACK = [
-  { file: "shahmir-khan-profile.html" }
+  // Add more files here as you create them:
+  // {
+  //   file:        "ogdc-report.html",
+  //   title:       "OGDC — Company Update",
+  //   description: "Oil & Gas sector company update, Jan 2025.",
+  //   type:        "Research",
+  //   icon:        "📊",
+  //   date:        "Jan 2025"
+  // },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -592,21 +593,19 @@ const inferType = f => {
 };
 const inferIcon = t => ({ Profile:'👤', Research:'📊', Presentation:'📋', Note:'📝', Document:'📄' }[t] || '📄');
 const humanise  = s => s.replace(/\.html?$/i,'').replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-const fmtDate   = iso => { try { return new Date(iso).toLocaleDateString('en-GB',{month:'short',year:'numeric'}); } catch{return '';} };
 
 // ─────────────────────────────────────────────────────────────
-//  ENRICH — merge raw file entry with META overrides
+//  ENRICH — fill in any missing fields from filename inference
 // ─────────────────────────────────────────────────────────────
 function enrich(raw) {
-  const ov   = META[raw.file] || {};
-  const type = ov.type || raw.type || inferType(raw.file);
-  const icon = ov.icon || raw.icon || inferIcon(type);
+  const type = raw.type || inferType(raw.file);
+  const icon = raw.icon || inferIcon(type);
   return {
     file:        raw.file,
-    title:       ov.title       || raw.title       || humanise(raw.file),
-    description: ov.description || raw.description || 'HTML document in the repository.',
+    title:       raw.title       || humanise(raw.file),
+    description: raw.description || 'HTML document in the repository.',
     type, icon,
-    date:        raw.modified   ? fmtDate(raw.modified) : (raw.date || '')
+    date:        raw.date || ''
   };
 }
 
@@ -617,9 +616,9 @@ let ALL = [];
 
 function setCount(n) {
   const word = n === 1 ? 'document' : 'documents';
-  document.getElementById('count-label').textContent   = n + ' ' + word;
-  document.getElementById('hero-count').textContent    = String(n);
-  document.getElementById('topbar-pill').innerHTML     = `<b>${n}</b> ${word}`;
+  document.getElementById('count-label').textContent = n + ' ' + word;
+  document.getElementById('hero-count').textContent  = String(n);
+  document.getElementById('topbar-pill').innerHTML   = `<b>${n}</b> ${word}`;
 }
 
 function renderCards(docs) {
@@ -656,6 +655,16 @@ function renderCards(docs) {
   });
 }
 
+function noFiles() {
+  document.getElementById('doc-grid').innerHTML = `
+    <div class="state-msg">
+      <span class="state-icon">📂</span>
+      <div class="state-title">No documents listed</div>
+      <div class="state-sub">Add entries to the FILES array at the top of the script in index.html</div>
+    </div>`;
+  setCount(0);
+}
+
 function boot(rawFiles) {
   ALL = rawFiles.map(enrich);
   setCount(ALL.length);
@@ -672,33 +681,10 @@ function boot(rawFiles) {
   });
 }
 
-function noManifest() {
-  document.getElementById('doc-grid').innerHTML = `
-    <div class="state-msg">
-      <span class="state-icon">📂</span>
-      <div class="state-title">Add a manifest to auto-discover files</div>
-      <div class="state-sub">
-        Place this index.html in your repo folder, then run:<br>
-        <code>node generate-manifest.js</code><br>
-        Or add files manually to the FALLBACK list in index.html
-      </div>
-    </div>`;
-  setCount(0);
-}
-
 // ─────────────────────────────────────────────────────────────
-//  BOOTSTRAP — fetch manifest.json → fallback → error state
+//  BOOTSTRAP — no fetch, no server needed
 // ─────────────────────────────────────────────────────────────
-fetch('manifest.json?t=' + Date.now())
-  .then(r => { if (!r.ok) throw 0; return r.json(); })
-  .then(data => {
-    const files = Array.isArray(data) ? data : (data.files || []);
-    if (!files.length) throw 0;
-    boot(files);
-  })
-  .catch(() => {
-    FALLBACK.length ? boot(FALLBACK) : noManifest();
-  });
+FILES.length ? boot(FILES) : noFiles();
 </script>
 </body>
 </html>
