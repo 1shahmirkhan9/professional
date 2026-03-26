@@ -173,7 +173,6 @@ body::before {
 }
 .hero-bio strong { color: rgba(255,255,255,0.68); font-weight: 500; }
 
-/* Hero stat cluster */
 .hero-stats {
   display: flex;
   flex-direction: column;
@@ -407,7 +406,7 @@ body::before {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.15);
-  line-height: 1.9;
+  line-height: 2;
 }
 .state-sub code {
   display: inline-block;
@@ -417,7 +416,6 @@ body::before {
   border-radius: 3px;
   color: var(--gold-lt);
   font-size: 10px;
-  margin-top: 6px;
 }
 
 /* shimmer */
@@ -495,7 +493,7 @@ body::before {
 <nav class="topbar">
   <div class="topbar-inner">
     <div class="topbar-brand">Shahmir <span>Khan</span></div>
-    <div class="topbar-pill" id="topbar-pill">Loading…</div>
+    <div class="topbar-pill" id="topbar-pill">&nbsp;</div>
   </div>
 </nav>
 
@@ -506,6 +504,9 @@ body::before {
       <div class="hero-eyebrow">Personal Portfolio Hub</div>
       <div class="hero-name">Shahmir <span>Khan</span></div>
       <div class="hero-subtitle">Finance &amp; Strategy Professional</div>
+      <p class="hero-bio">
+        <strong>IBA Karachi</strong> graduate working at the intersection of development finance, credit risk, and capital markets. This hub indexes all documents, profiles, and research in the repository.
+      </p>
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
@@ -526,24 +527,20 @@ body::before {
 
 <!-- CONTENT -->
 <div class="content">
-
   <div class="section-header">
     <span class="section-header-text">Repository</span>
     <div class="section-header-rule"></div>
     <span id="count-label">—</span>
   </div>
-
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
     <input class="search-input" id="search" type="text" placeholder="Search documents…" autocomplete="off">
   </div>
-
   <div class="doc-grid" id="doc-grid">
     <div class="shimmer"></div>
     <div class="shimmer"></div>
     <div class="shimmer"></div>
   </div>
-
 </div>
 
 <!-- FOOTER -->
@@ -556,29 +553,25 @@ body::before {
 
 <script>
 // ─────────────────────────────────────────────────────────────
-//  FILES — add an entry here for every HTML file in the repo.
-//  This works when opened directly as a local file (no server
-//  needed). Just keep index.html in the same folder as the others.
+//  OPTIONAL METADATA
+//  Enrich auto-discovered files with human-friendly titles,
+//  descriptions, types and icons. Any file not listed here
+//  will have its details inferred automatically from its name.
 // ─────────────────────────────────────────────────────────────
-const FILES = [
-  {
-    file:        "shahmir-khan-profile.html",
+const META = {
+  "shahmir-khan-profile.html": {
     title:       "Shahmir Khan — Profile",
-    description: "Professional profile covering development finance, credit risk, treasury management, and equity research experience.",
+    description: "Professional profile covering development finance, credit risk, treasury management, and equity research.",
     type:        "Profile",
-    icon:        "👤",
-    date:        "Mar 2026"
+    icon:        "👤"
   }
-  // Add more files here as you create them:
-  // {
-  //   file:        "ogdc-report.html",
+  // "ogdc-update.html": {
   //   title:       "OGDC — Company Update",
   //   description: "Oil & Gas sector company update, Jan 2025.",
   //   type:        "Research",
-  //   icon:        "📊",
-  //   date:        "Jan 2025"
+  //   icon:        "📊"
   // },
-];
+};
 
 // ─────────────────────────────────────────────────────────────
 //  HELPERS
@@ -592,20 +585,19 @@ const inferType = f => {
   return 'Document';
 };
 const inferIcon = t => ({ Profile:'👤', Research:'📊', Presentation:'📋', Note:'📝', Document:'📄' }[t] || '📄');
-const humanise  = s => s.replace(/\.html?$/i,'').replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+const humanise  = s => s.replace(/\.html?$/i,'').replace(/[-_]+/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+const fmtDate   = iso => { try { return new Date(iso).toLocaleDateString('en-GB', { month:'short', year:'numeric' }); } catch { return ''; } };
 
-// ─────────────────────────────────────────────────────────────
-//  ENRICH — fill in any missing fields from filename inference
-// ─────────────────────────────────────────────────────────────
 function enrich(raw) {
-  const type = raw.type || inferType(raw.file);
-  const icon = raw.icon || inferIcon(type);
+  const ov   = META[raw.file] || {};
+  const type = ov.type || raw.type || inferType(raw.file);
+  const icon = ov.icon || raw.icon || inferIcon(type);
   return {
     file:        raw.file,
-    title:       raw.title       || humanise(raw.file),
-    description: raw.description || 'HTML document in the repository.',
+    title:       ov.title       || raw.title       || humanise(raw.file),
+    description: ov.description || raw.description || 'HTML document in the repository.',
     type, icon,
-    date:        raw.date || ''
+    date:        raw.modified ? fmtDate(raw.modified) : (raw.date || '')
   };
 }
 
@@ -624,7 +616,6 @@ function setCount(n) {
 function renderCards(docs) {
   const grid = document.getElementById('doc-grid');
   grid.innerHTML = '';
-
   if (!docs.length) {
     grid.innerHTML = `
       <div class="state-msg">
@@ -634,7 +625,6 @@ function renderCards(docs) {
       </div>`;
     return;
   }
-
   docs.forEach((doc, i) => {
     const card = document.createElement('div');
     card.className = 'doc-card';
@@ -655,21 +645,10 @@ function renderCards(docs) {
   });
 }
 
-function noFiles() {
-  document.getElementById('doc-grid').innerHTML = `
-    <div class="state-msg">
-      <span class="state-icon">📂</span>
-      <div class="state-title">No documents listed</div>
-      <div class="state-sub">Add entries to the FILES array at the top of the script in index.html</div>
-    </div>`;
-  setCount(0);
-}
-
 function boot(rawFiles) {
   ALL = rawFiles.map(enrich);
   setCount(ALL.length);
   renderCards(ALL);
-
   document.getElementById('search').addEventListener('input', function () {
     const q = this.value.trim().toLowerCase();
     renderCards(!q ? ALL : ALL.filter(d =>
@@ -682,9 +661,37 @@ function boot(rawFiles) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  BOOTSTRAP — no fetch, no server needed
+//  BOOTSTRAP
+//  Fetches manifest.json (generated by generate-manifest.js).
+//  Requires a web server — works on GitHub Pages, VS Code Live
+//  Server, or any static host. Does not work via file://.
 // ─────────────────────────────────────────────────────────────
-FILES.length ? boot(FILES) : noFiles();
+fetch('manifest.json?t=' + Date.now())
+  .then(r => {
+    if (!r.ok) throw new Error('manifest_missing');
+    return r.json();
+  })
+  .then(data => {
+    const files = Array.isArray(data) ? data : (data.files || []);
+    if (!files.length) throw new Error('manifest_empty');
+    boot(files);
+  })
+  .catch(err => {
+    const isLocal = location.protocol === 'file:';
+    document.getElementById('doc-grid').innerHTML = `
+      <div class="state-msg">
+        <span class="state-icon">📂</span>
+        <div class="state-title">${isLocal ? 'Not served over HTTP' : 'manifest.json not found'}</div>
+        <div class="state-sub">
+          ${isLocal
+            ? 'This page must be served via a web server, not opened as a local file.<br>Push to GitHub Pages or run a local server:'
+            : 'Run the generator script to index your HTML files, then commit manifest.json:'}
+          <br><br>
+          <code>node generate-manifest.js</code>
+        </div>
+      </div>`;
+    setCount(0);
+  });
 </script>
 </body>
 </html>
