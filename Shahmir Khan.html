@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shahmir Khan — Finance & Strategy Professional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --white:    #ffffff;
+  --off:      #f7f6f3;
+  --rule:     #e2dfd8;
+  --rule2:    #ede9e3;
+  --muted:    #9a948a;
+  --body:     #3d3830;
+  --heading:  #1a1714;
+  --ink:      #0e0c0a;
+  --gold:     #b8975a;
+  --gold-lt:  #d4b07a;
+  --gold-bg:  #f9f5ee;
+  --navy:     #1c2b3a;
+  --navy-lt:  #263a4d;
+  --green:    #2e6b4f;
+  --green-lt: #e8f3ee;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'IBM Plex Sans', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:    0 4px 16px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.05);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ─── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 15px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--off);
+  color: var(--body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+strong { font-weight: 600; color: var(--heading); }
+
+/* ─── LAYOUT ─────────────────────────────────────────────── */
+.wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 36px;
+}
+
+/* ─── NAV ────────────────────────────────────────────────── */
+.topbar {
+  background: var(--navy);
+  padding: 0 36px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+}
+.topbar-brand {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.01em;
+}
+.topbar-brand span {
+  color: var(--gold-lt);
+}
+.topbar-nav {
+  display: flex;
+  list-style: none;
+  gap: 0;
+}
+.topbar-nav a {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  padding: 0 18px;
+  height: 58px;
+  line-height: 58px;
+  transition: color 0.15s, background 0.15s;
+  border-bottom: 2px solid transparent;
+}
+.topbar-nav a:hover {
+  color: var(--white);
+  background: rgba(255,255,255,0.05);
+  border-bottom-color: var(--gold-lt);
+}
+.topbar-cta {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--navy);
+  background: var(--gold-lt);
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+.topbar-cta:hover { background: var(--gold); }
+
+/* ─── HERO ───────────────────────────────────────────────── */
+.hero {
+  background: var(--navy);
+  padding: 72px 36px 64px;
+}
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 64px;
+  align-items: end;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+}
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 62px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 28px;
+  letter-spacing: 0.01em;
+}
+.hero-bio {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.62);
+  max-width: 560px;
+  line-height: 1.8;
+  margin-bottom: 36px;
+}
+.hero-bio strong {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+.hero-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 5px 13px;
+  border-radius: 3px;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 11px 24px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+.btn-gold:hover { background: var(--gold-lt); }
+.btn-outline-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 11px 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.15s;
+}
+.btn-outline-white:hover {
+  color: var(--white);
+  border-color: rgba(255,255,255,0.45);
+}
+
+/* Hero monogram card */
+.hero-monogram {
+  width: 180px;
+  height: 220px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.hero-monogram-initials {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  opacity: 0.6;
+}
+.hero-monogram-divider {
+  width: 40px;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+}
+.hero-monogram-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ─── STATS BAR ──────────────────────────────────────────── */
+.stats-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--rule);
+  box-shadow: var(--shadow-sm);
+}
+.stats-bar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.stat-item {
+  padding: 24px 28px;
+  border-right: 1px solid var(--rule);
+  transition: background 0.15s;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: var(--gold-bg); }
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-number sup {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  vertical-align: super;
+}
+.stat-desc {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── MAIN GRID ──────────────────────────────────────────── */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 36px;
+  padding: 56px 0 80px;
+}
+
+/* ─── SECTION ────────────────────────────────────────────── */
+.section { margin-bottom: 52px; }
+.section:last-child { margin-bottom: 0; }
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.section-label-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.section-label-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+.section-heading {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+
+/* ─── EXPERIENCE CARDS ───────────────────────────────────── */
+.exp-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 28px 30px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.exp-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.exp-card:hover {
+  box-shadow: var(--shadow);
+  border-color: #cec9c0;
+}
+.exp-card:hover::before { opacity: 1; }
+
+.exp-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.exp-role {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: -0.01em;
+}
+.exp-company {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold);
+  margin-top: 2px;
+}
+.exp-period {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  background: var(--off);
+  border: 1px solid var(--rule);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.exp-body {
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+.exp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--navy);
+  background: #eef1f5;
+  border: 1px solid #d8dde5;
+  padding: 3px 10px;
+  border-radius: 3px;
+  transition: background 0.15s, color 0.15s;
+}
+.chip:hover { background: var(--navy); color: var(--white); }
+
+/* ─── SERVICES ───────────────────────────────────────────── */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.service-item {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: default;
+}
+.service-item:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow);
+}
+.service-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-bg);
+  border: 1px solid rgba(184,151,90,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.service-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: 0.01em;
+}
+
+/* ─── RESEARCH TABLE ─────────────────────────────────────── */
+.research-table {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.research-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--rule2);
+  transition: background 0.15s;
+}
+.research-row:last-child { border-bottom: none; }
+.research-row:hover { background: var(--gold-bg); }
+.research-row-head {
+  background: var(--navy);
+  padding: 12px 22px;
+}
+.research-row-head span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+.rh-1 { grid-column: 1; }
+.rh-2 { grid-column: 2; }
+.rh-3 { grid-column: 3; }
+
+.research-ticker {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--navy);
+  background: #eef1f5;
+  border: 1px solid #d8dde5;
+  padding: 4px 10px;
+  border-radius: 3px;
+  min-width: 70px;
+  text-align: center;
+}
+.research-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--heading);
+}
+.research-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.research-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  border: 1px solid rgba(184,151,90,0.35);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.research-link:hover {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────── */
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rule2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-header-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.card-header-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.card-body { padding: 20px; }
+
+/* Expertise pills */
+.expertise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.expertise-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.expertise-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.expertise-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--heading);
+}
+.expertise-pct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.expertise-bar-bg {
+  height: 3px;
+  background: var(--rule2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.expertise-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+  animation: barGrow 1s ease both;
+  transform-origin: left;
+}
+@keyframes barGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Quote card */
+.quote-block {
+  padding: 20px;
+  position: relative;
+}
+.quote-block + .quote-block {
+  border-top: 1px solid var(--rule2);
+}
+.quote-mark {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--gold);
+  opacity: 0.18;
+  line-height: 0.7;
+  margin-bottom: 8px;
+  display: block;
+}
+.quote-text {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--body);
+  line-height: 1.65;
+}
+
+/* Education card */
+.edu-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.edu-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-bg);
+  border: 1px solid rgba(184,151,90,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.edu-degree {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading);
+  line-height: 1.3;
+}
+.edu-school {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Contact card */
+.contact-list { display: flex; flex-direction: column; gap: 0; }
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--rule2);
+  transition: padding-left 0.15s;
+}
+.contact-row:last-child { border-bottom: none; }
+.contact-row:hover { padding-left: 4px; }
+.contact-row a {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--body);
+  transition: color 0.15s;
+}
+.contact-row:hover a { color: var(--gold); }
+.contact-icon {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: var(--off);
+  border: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* Status badge */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--green-lt);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+}
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-green 2s infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-green {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(46,107,79,0.35); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(46,107,79,0); }
+}
+.status-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--green);
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+.footer {
+  background: var(--navy);
+  padding: 32px 36px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+}
+.footer-brand span { color: var(--gold-lt); }
+.footer-note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.06em;
+}
+
+/* ─── BOOKMARK CARDS ─────────────────────────────────────── */
+.bookmark-card {
+  display: flex;
+  gap: 0;
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  text-decoration: none;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+.bookmark-card:hover {
+  box-shadow: var(--shadow);
+  border-color: #cec9c0;
+  transform: translateY(-1px);
+}
+.bookmark-body {
+  flex: 1;
+  padding: 18px 20px;
+  min-width: 0;
+}
+.bookmark-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 7px;
+}
+.bookmark-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--heading);
+  line-height: 1.3;
+  margin-bottom: 7px;
+  letter-spacing: -0.01em;
+}
+.bookmark-card:hover .bookmark-title { color: var(--navy); }
+.bookmark-desc {
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bookmark-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bookmark-author {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--body);
+}
+.bookmark-dot { color: var(--rule); font-size: 14px; line-height: 1; }
+.bookmark-read {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.bookmark-thumb {
+  width: 100px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: -0.02em;
+  border-left: 1px solid var(--rule2);
+}
+.bookmark-thumb-1 { background: linear-gradient(135deg, #1c3a2e, #2e6b4f); }
+.bookmark-thumb-2 { background: linear-gradient(135deg, #1c2b3a, #2a4060); }
+.bookmark-thumb-3 { background: linear-gradient(135deg, #3a2b1c, #b8975a); }
+
+@keyframes pulse-gold {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(184,151,90,0.5); }
+  50%      { opacity: 0.6; box-shadow: 0 0 0 4px rgba(184,151,90,0); }
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────── */
+.fade-in { animation: fadeIn 0.5s ease both; }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-monogram { display: none; }
+  .stats-bar-inner { grid-template-columns: repeat(2, 1fr); }
+  .main-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+  .topbar-nav, .topbar-cta { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">Shahmir <span>Khan</span></div>
+    <ul class="topbar-nav">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#research">Research</a></li>
+    </ul>
+    <a href="/cdn-cgi/l/email-protection#dba8b3bab3b6b2a9f5bab7b2f5b0b3bab5eae29bbcb6bab2b7f5b8b4b6" class="topbar-cta">Get in Touch</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="fade-in">
+      <div class="hero-eyebrow">Finance &amp; Strategy Professional</div>
+      <div class="hero-name">Shahmir Khan</div>
+      <div class="hero-title">Development Finance · Credit Risk · Equity Research</div>
+      <p class="hero-bio">
+        An <strong>Accounting &amp; Finance graduate from IBA Karachi</strong>, working at the intersection of development finance, financial planning, and capital markets. Currently at <strong>NCGCL</strong>, leading treasury management, credit guarantee structuring, and SME risk evaluation. Previously covered <strong>Oil &amp; Gas and Power sectors</strong> as an Equity Research Analyst at Akseer Research.
+      </p>
+      <div class="hero-tags">
+        <span class="hero-tag">Development Finance</span>
+        <span class="hero-tag">Credit Risk</span>
+        <span class="hero-tag">Equity Research</span>
+        <span class="hero-tag">Transaction Structuring</span>
+        <span class="hero-tag">SME Finance</span>
+      </div>
+      <div class="hero-actions">
+        <a href="#research" class="btn-gold">View Research</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- STATS BAR -->
+<div class="stats-bar fade-in">
+  <div class="stats-bar-inner">
+    <div class="stat-item">
+      <div class="stat-number">2<sup>+</sup></div>
+      <div class="stat-desc">Years Experience</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">3<sup>+</sup></div>
+      <div class="stat-desc">Research Reports</div>
+    </div>
+    <div class="stat-item" style="position:relative;">
+      <div class="stat-number" id="hours-counter" style="font-variant-numeric: tabular-nums; letter-spacing: -0.03em;">—</div>
+      <div class="stat-desc">Hours in Finance <span id="hours-tick" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--gold); margin-left:5px; vertical-align:middle; animation: pulse-gold 1s infinite;"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="wrapper">
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <main>
+
+      <!-- EXPERIENCE -->
+      <section class="section fade-in" id="experience">
+        <div class="section-label">
+          <span class="section-label-text">Career</span>
+          <div class="section-label-rule"></div>
+        </div>
+        <div class="section-heading">Professional Experience</div>
+
+        <div class="exp-card">
+          <div class="exp-top">
+            <div>
+              <div class="exp-role">Analyst — Financial Planning &amp; Treasury</div>
+              <div class="exp-company">National Credit Guarantee Company Limited (NCGCL)</div>
+            </div>
+            <span class="exp-period">Apr 2025 – Present</span>
+          </div>
+          <div class="exp-body">
+            Working at the intersection of development finance and financial planning. Leading initiatives on treasury management, credit guarantee structuring, and SME risk evaluation. Focused on transaction structuring and driving projects that support infrastructure growth, sustainability, and social impact.
+          </div>
+          <div class="exp-chips">
+            <span class="chip">Treasury Management</span>
+            <span class="chip">Credit Guarantee Structuring</span>
+            <span class="chip">SME Risk Evaluation</span>
+            <span class="chip">Development Finance</span>
+            <span class="chip">Transaction Structuring</span>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="exp-top">
+            <div>
+              <div class="exp-role">Analyst — Equity Research</div>
+              <div class="exp-company">Akseer Research</div>
+            </div>
+            <span class="exp-period">Jun 2024 – Apr 2025</span>
+          </div>
+          <div class="exp-body">
+            Covered Oil &amp; Gas and Power sectors, developing deep sector-specific financial models and investment theses. Published research on E&amp;P companies and sector-level policy developments including circular debt resolution. Built expertise in equity valuation, capital markets analysis, and sector fundamentals.
+          </div>
+          <div class="exp-chips">
+            <span class="chip">Equity Valuation</span>
+            <span class="chip">Oil &amp; Gas</span>
+            <span class="chip">Power Sector</span>
+            <span class="chip">Financial Modelling</span>
+            <span class="chip">Capital Markets</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SERVICES -->
+      <section class="section fade-in delay-1" id="services">
+        <div class="section-label">
+          <span class="section-label-text">Offerings</span>
+          <div class="section-label-rule"></div>
+        </div>
+        <div class="section-heading">Services Offered</div>
+        <div class="services-grid">
+          <div class="service-item">
+            <div class="service-icon">📊</div>
+            <div class="service-name">Business Valuation</div>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">🔍</div>
+            <div class="service-name">Credit Analysis</div>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">📈</div>
+            <div class="service-name">Equity Research</div>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">📋</div>
+            <div class="service-name">Feasibility Studies</div>
+          </div>
+          <div class="service-item">
+            <div class="service-icon">🏢</div>
+            <div class="service-name">Corporate Decks</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESEARCH -->
+      <section class="section fade-in delay-2" id="research">
+        <div class="section-label">
+          <span class="section-label-text">Equity Research Portfolio</span>
+          <div class="section-label-rule"></div>
+        </div>
+        <div class="section-heading">Published Research</div>
+
+        <div class="research-table">
+          <div class="research-row research-row-head">
+            <span class="rh-1">Ticker</span>
+            <span class="rh-2">Report</span>
+            <span class="rh-3">Link</span>
+          </div>
+          <div class="research-row">
+            <span class="research-ticker">OGDC</span>
+            <div>
+              <div class="research-title">OGDC — Company Update</div>
+              <div class="research-type">Oil &amp; Gas · Company Update · Jan 2025</div>
+            </div>
+            <a class="research-link" href="https://admin.askanalyst.com.pk/alphatrade/files/OGDC - Company Update - 2025010820250108133216.pdf" target="_blank">
+              PDF ↗
+            </a>
+          </div>
+          <div class="research-row">
+            <span class="research-ticker">E&amp;P</span>
+            <div>
+              <div class="research-title">Circular Debt Resolution — Sector Update</div>
+              <div class="research-type">E&amp;P Sector · Sector Update · Oct 2024</div>
+            </div>
+            <a class="research-link" href="https://admin.askanalyst.com.pk/alphatrade/files/E&P - Sector Update 08 Oct 202420241008171059.pdf" target="_blank">
+              PDF ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUTHORSHIP -->
+      <section class="section fade-in delay-3" id="authorship">
+        <div class="section-label">
+          <span class="section-label-text">Writing</span>
+          <div class="section-label-rule"></div>
+        </div>
+        <div class="section-heading">Authorship</div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+
+          <!-- Bookmark 1 — replace href with article URL -->
+          <a href="https://www.brecorder.com/news/40412960/negotiating-the-price-of-life-with-diabetes" class="bookmark-card" target="_blank" rel="noopener">
+            <div class="bookmark-body">
+              <div class="bookmark-tag">brecorder · Healthcare &amp; Policy</div>
+              <div class="bookmark-title">Negotiating the Price of Life with Diabetes</div>
+              <div class="bookmark-desc">An examination of insulin pricing structures, healthcare access economics, and what the diabetes drug market reveals about how we value human life.</div>
+              <div class="bookmark-meta">
+                <span class="bookmark-author">Shahmir Khan</span>
+                <span class="bookmark-dot">·</span>
+                <span class="bookmark-read">6 min read</span>
+              </div>
+            </div>
+            <div class="bookmark-thumb bookmark-thumb-1">
+              <span>Rx</span>
+            </div>
+          </a>
+
+          <!-- Bookmark 2 — replace href with article URL -->
+          <a href="https://www.brecorder.com/news/40376485/beyond-the-equity-cliff" class="bookmark-card" target="_blank" rel="noopener">
+            <div class="bookmark-body">
+              <div class="bookmark-tag">brecorder · Finance &amp; Capital Markets</div>
+              <div class="bookmark-title">Beyond the Equity Cliff</div>
+              <div class="bookmark-desc">A critical look at how equity-heavy capital structures distort incentives for founders, early employees, and long-term value creation.</div>
+              <div class="bookmark-meta">
+                <span class="bookmark-author">Shahmir Khan</span>
+                <span class="bookmark-dot">·</span>
+                <span class="bookmark-read">8 min read</span>
+              </div>
+            </div>
+            <div class="bookmark-thumb bookmark-thumb-2">
+              <span>₨</span>
+            </div>
+          </a>
+
+          <!-- Bookmark 3 — replace href with article URL -->
+          <a href="https://www.dawn.com/news/1927016/pricing-electricity-correctly" class="bookmark-card" target="_blank" rel="noopener">
+            <div class="bookmark-body">
+              <div class="bookmark-tag">Dawn · Energy &amp; Regulation</div>
+              <div class="bookmark-title">Pricing Electricity Correctly</div>
+              <div class="bookmark-desc">Why Pakistan's power sector crisis is fundamentally a pricing problem — and what cost-reflective tariffs, circular debt resolution, and demand-side reform could mean for the grid.</div>
+              <div class="bookmark-meta">
+                <span class="bookmark-author">Shahmir Khan</span>
+                <span class="bookmark-dot">·</span>
+                <span class="bookmark-read">10 min read</span>
+              </div>
+            </div>
+            <div class="bookmark-thumb bookmark-thumb-3">
+              <span>⚡</span>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- AREAS OF EXPERTISE -->
+      <div class="card fade-in delay-2">
+        <div class="card-header">
+          <div class="card-header-dot"></div>
+          <div class="card-header-title">Areas of Expertise</div>
+        </div>
+        <div class="card-body">
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Credit &amp; Risk Analysis</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Financial Modelling</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Equity Valuation</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Development Finance</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Transaction Structuring</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Treasury Management</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">SME Finance</span>
+            <span class="chip" style="padding:6px 13px; font-size:12px;">Capital Markets</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTOR COVERAGE -->
+      <div class="card fade-in delay-2">
+        <div class="card-header">
+          <div class="card-header-dot"></div>
+          <div class="card-header-title">Sector Coverage</div>
+        </div>
+        <div class="card-body" style="padding: 16px 20px;">
+          <div style="margin-bottom: 14px;">
+            <div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;">Direct Coverage</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1; letter-spacing: -0.02em;">3</span>
+              <div style="flex: 1; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--gold), var(--gold-lt));"></div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--rule2); padding-top: 14px;">
+            <div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;">Indirect Coverage</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-family: var(--font-display); font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1; letter-spacing: -0.02em;">5</span>
+              <div style="flex: 1; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--navy), var(--navy-lt));"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDUCATION -->
+      <div class="card fade-in delay-2">
+        <div class="card-header">
+          <div class="card-header-dot"></div>
+          <div class="card-header-title">Education</div>
+        </div>
+        <div class="card-body">
+          <div class="edu-item">
+            <div class="edu-icon">🎓</div>
+            <div>
+              <div class="edu-degree">BS Accounting &amp; Finance</div>
+              <div class="edu-school">Institute of Business Administration (IBA), Karachi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUOTES -->
+      <div class="card fade-in delay-3">
+        <div class="card-header">
+          <div class="card-header-dot"></div>
+          <div class="card-header-title">Perspectives</div>
+        </div>
+        <div class="quote-block">
+          <span class="quote-mark">"</span>
+          <p class="quote-text">Board Meeting decisions are often made the day before the meeting.</p>
+        </div>
+        <div class="quote-block">
+          <span class="quote-mark">"</span>
+          <p class="quote-text">Sponsor's faith is most often the first line of defense for a creditor.</p>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="card fade-in delay-3">
+        <div class="card-header">
+          <div class="card-header-dot"></div>
+          <div class="card-header-title">Contact</div>
+        </div>
+        <div class="card-body">
+          <div class="contact-list">
+            <div class="contact-row">
+              <span class="contact-icon">✉️</span>
+              <a href="/cdn-cgi/l/email-protection#70031811181d19025e111c195e1b18111e414930171d11191c5e131f1d"><span class="__cf_email__" data-cfemail="d3a0bbb2bbbebaa1fdb2bfbafdb8bbb2bde2ea93b4beb2babffdb0bcbe">[email&#160;protected]</span></a>
+            </div>
+            <div class="contact-row">
+              <span class="contact-icon">💼</span>
+              <a href="https://www.linkedin.com/in/shahmiralikhan/" target="_blank">LinkedIn Profile ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">Shahmir <span>Khan</span></div>
+    <div class="footer-note">Finance &amp; Strategy · IBA Karachi · Karachi, Pakistan</div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── Live Hours in Finance Counter ──────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+  var START = new Date('2024-06-01T09:00:00').getTime();
+  var AVG_HOURS_PER_WEEK = 48;
+  var MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+  function tick() {
+    var elapsed = Date.now() - START;
+    var hours = Math.floor(elapsed * AVG_HOURS_PER_WEEK / MS_PER_WEEK);
+    var el = document.getElementById('hours-counter');
+    if (el) el.textContent = hours.toLocaleString('en-US');
+  }
+
+  tick();
+  setInterval(tick, 1000);
+});
+</script>
+</body>
+</html>
