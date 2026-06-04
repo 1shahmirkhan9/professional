@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net Loss Trigger Model</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --walnut:#3D2E26;--bark:#5C463A;--taupe:#8B7565;--mushroom:#A89A8E;--ash:#8A8580;--slate:#5D5C5A;
+  --bg:#F4F0EB;--surface:#FDFCFA;--surface2:#EDE9E3;--border:#D6D0C8;--border2:#C2BBB2;
+  --text:#2A2018;--text2:#5C463A;--text3:#8B7565;--text4:#A89A8E;
+  --pos:#3A5040;--pos-mid:#4E6B58;--pos-bg:#E8EDE9;--pos-bdr:#B2C8B8;
+  --neg:#6B2E20;--neg-mid:#8C3D2C;--neg-bg:#F2E8E4;--neg-bdr:#D4B0A6;
+  --warn:#6B4A18;--warn-bg:#F5EDDF;--warn-bdr:#D4B87A;
+  --accent:var(--walnut);--accent-light:#EDE6E0;
+  --sans:'Inter',system-ui,sans-serif;--serif:'Newsreader',Georgia,serif;--r:5px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.page{max-width:1180px;margin:0 auto;padding:28px 24px 72px;}
+
+.hdr{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.hdr-eye{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);margin-bottom:4px;}
+.hdr-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--walnut);letter-spacing:-.01em;}
+.hdr-sub{font-size:12px;color:var(--text3);margin-top:4px;}
+
+.layout{display:grid;grid-template-columns:296px 1fr;gap:18px;align-items:start;}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);}
+.phead{padding:9px 14px;border-bottom:1px solid var(--border);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);}
+.pbody{padding:14px 16px;}
+
+.ig{margin-bottom:13px;}
+.ig:last-child{margin-bottom:0;}
+.ig-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+.ig-lbl span:first-child{font-size:11px;color:var(--text2);}
+.ig-val{font-family:var(--sans);font-size:11px;font-weight:500;color:var(--walnut);background:var(--accent-light);padding:1px 7px;border-radius:3px;min-width:52px;text-align:center;}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--walnut);border:2px solid var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.2);}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--walnut);border:2px solid var(--bg);cursor:pointer;}
+.div{height:1px;background:var(--border);margin:13px 0;}
+
+.tog-row{display:flex;gap:3px;background:var(--surface2);padding:3px;border-radius:var(--r);border:1px solid var(--border);}
+.tog{flex:1;padding:5px 7px;font-size:11px;font-weight:500;border:none;background:transparent;color:var(--text3);border-radius:4px;cursor:pointer;font-family:var(--sans);transition:all .12s;white-space:nowrap;}
+.tog.on{background:var(--surface);color:var(--walnut);box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.tog-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.07em;}
+
+/* Scores */
+.scores{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.score{border-radius:var(--r);padding:15px 16px 13px;}
+.sc-lbl{font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin-bottom:7px;opacity:.65;}
+.sc-val{font-family:var(--serif);font-size:23px;font-weight:400;letter-spacing:-.01em;line-height:1;margin-bottom:5px;}
+.sc-sub{font-size:11px;opacity:.65;line-height:1.4;}
+.sc-bar{height:2px;border-radius:2px;margin-top:9px;background:rgba(0,0,0,.08);overflow:hidden;}
+.sc-fill{height:100%;border-radius:2px;transition:width .35s;}
+.sn{background:var(--surface);border:1px solid var(--border);color:var(--text);} .sn .sc-fill{background:var(--taupe);}
+.sp{background:var(--pos-bg);border:1px solid var(--pos-bdr);color:var(--pos);}    .sp .sc-fill{background:var(--pos-mid);}
+.sg{background:var(--neg-bg);border:1px solid var(--neg-bdr);color:var(--neg);}    .sg .sc-fill{background:var(--neg-mid);}
+.sw{background:var(--warn-bg);border:1px solid var(--warn-bdr);color:var(--warn);}  .sw .sc-fill{background:#C48B30;}
+
+/* EL Scenario cards */
+.el-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.el-card{border-radius:var(--r);padding:14px 16px;}
+.el-head{font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin-bottom:10px;opacity:.7;}
+.el-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.el-row-lbl{font-size:11px;opacity:.75;}
+.el-row-val{font-family:var(--serif);font-size:17px;font-weight:400;}
+.el-row-sub{font-size:10px;opacity:.6;margin-top:1px;}
+.el-divider{height:1px;background:rgba(0,0,0,.08);margin:8px 0;}
+
+/* Tabs */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.tab-btn{padding:8px 16px;font-size:12px;font-weight:500;color:var(--text3);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--sans);transition:color .12s;margin-bottom:-1px;white-space:nowrap;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.on{color:var(--walnut);border-bottom-color:var(--walnut);}
+.tab-pane{display:none;}
+.tab-pane.on{display:block;}
+
+/* Tables */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{text-align:right;padding:8px 10px;font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--taupe);border-bottom:1px solid var(--border);white-space:nowrap;}
+thead th:first-child{text-align:left;}
+tbody td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap;}
+tbody td:first-child{text-align:left;color:var(--text2);font-size:11px;font-weight:500;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--surface2);}
+tfoot td{text-align:right;padding:8px 10px;font-size:12px;border-top:1px solid var(--border2);}
+tfoot td:first-child{text-align:right;font-size:11px;color:var(--text2);font-family:var(--sans);}
+
+.tp{color:var(--pos-mid);} .tg{color:var(--neg-mid);} .tn{color:var(--text3);} .tb{font-weight:600;}
+
+/* T2 heat */
+.h-sp{background:#D8E8DD;color:#1E3D28!important;font-weight:600;}
+.h-p{background:#EBF0EC;color:var(--pos);}
+.h-ng{background:var(--neg-bg);color:var(--neg-mid);}
+.h-sn{background:#E8CFC8;color:#4A1208!important;font-weight:600;}
+.t2-cc{background:var(--accent-light)!important;}
+.t2-ch{background:var(--accent-light)!important;color:var(--walnut)!important;}
+
+.t2-ctrl{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.ctl-lbl{font-size:11px;color:var(--text3);white-space:nowrap;}
+.chips{display:flex;gap:4px;flex-wrap:wrap;}
+.chip{padding:3px 10px;font-size:11px;font-weight:500;border:1px solid var(--border2);border-radius:100px;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--sans);transition:all .12s;}
+.chip:hover{border-color:var(--taupe);color:var(--bark);}
+.chip.on{background:var(--walnut);border-color:var(--walnut);color:#fff;}
+.chip.cur{background:var(--accent-light);border-color:var(--bark);color:var(--walnut);}
+
+.stitle{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--taupe);margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.stitle::after{content:'';flex:1;height:1px;background:var(--border);}
+.sec{margin-bottom:20px;}
+.note{font-size:11px;color:var(--text3);border-left:2px solid var(--border2);padding:5px 10px;margin:10px 16px 13px;line-height:1.6;}
+.err-box{background:var(--neg-bg);border:1px solid var(--neg-bdr);border-radius:var(--r);padding:11px 13px;margin-bottom:14px;}
+.err-title{font-size:9px;font-weight:600;color:var(--neg);margin-bottom:5px;text-transform:uppercase;letter-spacing:.07em;}
+.err-item{font-size:12px;color:var(--neg);margin-bottom:2px;padding-left:11px;position:relative;}
+.err-item::before{content:'–';position:absolute;left:0;}
+
+/* Charts */
+canvas{display:block;width:100%!important;}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px;}
+.chart-title{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--taupe);margin-bottom:14px;}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* Portfolio combo table */
+.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;}
+.b-pos{background:var(--pos-bg);color:var(--pos);}
+.b-neg{background:var(--neg-bg);color:var(--neg);}
+.b-neu{background:var(--surface2);color:var(--text3);}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <div class="hdr-eye">NCGCL · Guarantee Analytics</div>
+  <div class="hdr-title">Net Loss Trigger Model</div>
+  <div class="hdr-sub">Equity guarantee &nbsp;·&nbsp; Portfolio-level net loss trigger &nbsp;·&nbsp; Reserve self-funding thesis &nbsp;·&nbsp; Climate Core Pakistan</div>
+</div>
+
+<div class="layout">
+
+<!-- LEFT -->
+<div>
+  <div class="panel" style="margin-bottom:11px">
+    <div class="phead">Portfolio</div>
+    <div class="pbody">
+      <div class="ig"><div class="ig-lbl"><span>Fund size</span><span class="ig-val" id="v-fs">PKR 8.50bn</span></div><input type="range" id="fundSize" min="1000000000" max="20000000000" step="500000000" value="8500000000"></div>
+      <div class="ig"><div class="ig-lbl"><span>Cover % (guarantee ratio)</span><span class="ig-val" id="v-cv">25%</span></div><input type="range" id="cover" min="0.05" max="0.50" step="0.01" value="0.25"></div>
+      <div class="ig"><div class="ig-lbl"><span>Tenor (years)</span><span class="ig-val" id="v-tn">10</span></div><input type="range" id="tenor" min="3" max="15" step="1" value="10"></div>
+      <div class="div"></div>
+      <div class="ig"><div class="ig-lbl"><span>PD % — base scenario</span><span class="ig-val" id="v-pd">50%</span></div><input type="range" id="pd" min="0.01" max="1.00" step="0.01" value="0.50"></div>
+      <div class="ig"><div class="ig-lbl"><span>LGD %</span><span class="ig-val" id="v-lg">100%</span></div><input type="range" id="lgd" min="0.10" max="1.00" step="0.05" value="1.00"></div>
+      <div class="ig" style="margin-bottom:0"><div class="ig-lbl"><span>Deferred recovery rate</span><span class="ig-val" id="v-rc">0%</span></div><input type="range" id="recovery" min="0" max="0.80" step="0.05" value="0"></div>
+      <div class="div"></div>
+      <div class="ig" style="margin-bottom:0">
+        <div class="ig-lbl"><span>MOIC — surviving portfolio</span><span class="ig-val" id="v-moic">2.00x</span></div>
+        <input type="range" id="moic" min="0.5" max="6.0" step="0.05" value="2.0">
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5">Return on the portion of fund that does not default: Fund Value &times; (1&minus;PD&times;LGD) &times; MOIC. At 2.00x with base PD/LGD the guarantee does not trigger.</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="margin-bottom:11px">
+    <div class="phead">Fee structure</div>
+    <div class="pbody">
+      <div class="ig"><div class="ig-lbl"><span>Upfront fee %</span><span class="ig-val" id="v-uf">2.50%</span></div><input type="range" id="upfrontFee" min="0" max="0.10" step="0.005" value="0.025"></div>
+      <div class="ig" style="margin-bottom:0"><div class="ig-lbl"><span>Recurring annual fee %</span><span class="ig-val" id="v-rf">1.00%</span></div><input type="range" id="recurFee" min="0" max="0.10" step="0.005" value="0.01"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="phead">Rates &amp; options</div>
+    <div class="pbody">
+      <div class="ig"><div class="ig-lbl"><span>Risk-free rate (C10)</span><span class="ig-val" id="v-rr">12.38%</span></div><input type="range" id="rfr" min="0.03" max="0.25" step="0.001" value="0.1238"><div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5">Applied to reinvestment income and NPV discounting.</div></div>
+      <div class="div"></div>
+      <div class="ig"><div class="tog-lbl">Fee reserve deployment</div><div class="tog-row"><button class="tog on" id="td1" onclick="setTog('d',true)">Reinvest at RFR</button><button class="tog" id="td0" onclick="setTog('d',false)">Hold idle</button></div></div>
+      <div class="ig" style="margin-bottom:0"><div class="tog-lbl">Recoveries (C14)</div><div class="tog-row"><button class="tog" id="tr1" onclick="setTog('r',true)">Yes — T+5</button><button class="tog on" id="tr0" onclick="setTog('r',false)">No</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div>
+  <div id="errBox"></div>
+  <div class="scores" id="scores"></div>
+
+  <div class="tab-bar">
+    <button class="tab-btn on"  onclick="switchTab('main',this)">Overview</button>
+    <button class="tab-btn"     onclick="switchTab('el',this)">Expected Loss</button>
+    <button class="tab-btn"     onclick="switchTab('port',this)">Portfolio Analytics</button>
+    <button class="tab-btn"     onclick="switchTab('under',this)">Underlying tables</button>
+  </div>
+
+  <!-- TAB: OVERVIEW -->
+  <div class="tab-pane on" id="tab-main">
+    <div class="sec">
+      <div class="stitle">Table 1 — net transaction outcome: −max(0, min(Fund−Survivors×MOIC, gE)) + cumulative fee income</div>
+      <div class="panel"><div class="tw"><table>
+        <thead><tr><th style="text-align:left">Year</th><th>1%</th><th>2%</th><th>3%</th><th>4%</th><th>5%</th><th>6%</th><th>7%</th></tr></thead>
+        <tbody id="t1-body"></tbody>
+      </table></div>
+      <div class="note">Net transaction outcome = −max(0, min(Fund − Surviving×MOIC, Guaranteed Exposure)) + cumulative fee income. Surviving = Fund×(1−PD×LGD). MOIC applied to surviving portion nets off losses. Positive = fee reserve covers the MOIC-adjusted expected payout.</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="stitle">Table 2 — NPV by liquidation year &amp; recurring fee</div>
+      <div class="t2-ctrl">
+        <span class="ctl-lbl">T-years:</span><div class="chips" id="t-chips"></div>
+        <span class="ctl-lbl" style="margin-left:6px">Columns:</span><div class="chips" id="col-chips"></div>
+      </div>
+      <div class="panel"><div class="tw"><table>
+        <thead id="t2-head"></thead><tbody id="t2-body"></tbody>
+      </table></div>
+      <div class="note">Full guaranteed exposure triggers as lump-sum payout at T. Fees accrue up to T then stop. Discounted at RFR. Current recurring fee column highlighted.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: EXPECTED LOSS -->
+  <div class="tab-pane" id="tab-el">
+    <div class="sec">
+      <div class="stitle">Total EL by PD scenario</div>
+      <div class="el-grid" id="el-cards"></div>
+    </div>
+    <div class="sec">
+      <div class="stitle">EL summary table — Total EL &amp; Annualised EL by PD × LGD</div>
+      <div class="panel"><div class="tw">
+        <table id="el-table">
+          <thead><tr>
+            <th style="text-align:left">Scenario</th>
+            <th>PD</th><th>LGD (net)</th>
+            <th>Gross EL (one-time)</th>
+            <th>Annualised EL</th>
+            <th>Reserve @ tenor</th>
+            <th>Coverage</th>
+            <th>Verdict</th>
+          </tr></thead>
+          <tbody id="el-body"></tbody>
+        </table>
+      </div>
+      <div class="note">Total EL = single terminal payout = Guaranteed Exposure × PD × net-LGD. Annual EL = Total EL ÷ Tenor. Both are the correct framing for a one-time portfolio trigger guarantee. The prior "annual" calculation multiplied EL by tenor, overstating by ~10×.</div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="stitle">Reserve coverage across tenor — base PD scenario</div>
+      <div class="chart-wrap"><div class="chart-title">Cumulative income vs total EL over time (PKR Mn)</div><canvas id="chart-el" height="220"></canvas></div>
+    </div>
+  </div>
+
+<!-- TAB: PORTFOLIO ANALYTICS -->
+  <div class="tab-pane" id="tab-port">
+
+    <!-- Assumptions banner -->
+    <div style="background:var(--accent-light);border:1px solid var(--border2);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;font-size:11px;color:var(--text2);line-height:1.7">
+      <strong style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--walnut)">Model assumptions</strong><br>
+      Deal sizes and investment amounts in PKR Mn at USD:PKR 285. Termination value = Investment × MOIC per scenario.
+      Delta = Termination Value &minus; Investment (deal-level). Guarantee triggers if MOIC-adjusted net portfolio return is negative.
+      P(trigger) = share of sub-portfolio combinations where sum(Investment&times;MOIC) &lt; sum(Investment).
+      <span style="color:var(--taupe)">&#42; Indicative</span> = MOIC estimated by NCGCL; not sourced from company financial model.
+      Bear / Base / Bull PD scenarios apply to the payout calculator only; portfolio combinatorics use deal-level MOICs directly.
+    </div>
+
+    <!-- PD scenario strip -->
+    <div class="sec">
+      <div class="stitle">Scenario parameters</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:4px" id="pd-scenario-cards"></div>
+    </div>
+
+    <!-- Deal universe table (read-only, matching Excel) -->
+    <div class="sec">
+      <div class="stitle">Deal universe</div>
+      <div class="panel">
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th style="text-align:left">Deal</th>
+              <th style="text-align:left">Name</th>
+              <th>Size (PKR Mn)</th>
+              <th>MOIC Bear</th>
+              <th>MOIC Base</th>
+              <th>MOIC Bull</th>
+              <th>Source</th>
+            </tr></thead>
+            <tbody id="deal-input-body"></tbody>
+          </table>
+        </div>
+        <div class="note">&#42; = indicative (NCGCL estimate, not from company financial model). D4 and D5 names masked.</div>
+      </div>
+    </div>
+
+
+
+    <div class="sec">
+      <div class="stitle">P(guarantee trigger) by portfolio size — Bear / Base / Bull MOIC scenarios</div>
+      <div class="chart-wrap" style="margin-bottom:0"><canvas id="chart-ptrig" height="200"></canvas></div>
+    </div>
+
+
+    <!-- Full combo table -->
+    <div class="sec">
+      <div class="stitle" id="combo-stitle">Full combinatorial table — base scenario (127 combinations)</div>
+      <div class="panel"><div class="tw"><table>
+        <thead><tr>
+          <th style="text-align:left">#</th><th>N</th>
+          <th id="ch-d1">D1</th><th id="ch-d2">D2</th><th id="ch-d3">D3</th><th id="ch-d4">D4</th><th id="ch-d5">D5</th><th id="ch-d6">D6</th><th id="ch-d7">D7</th>
+          <th>Investment</th><th>Term. value</th><th>Delta</th>
+        </tr></thead>
+        <tbody id="combo-body"></tbody>
+      </table></div></div>
+    </div>
+
+  </div>
+
+  <!-- TAB: UNDERLYING -->
+  <div class="tab-pane" id="tab-under">
+    <div class="sec"><div class="stitle">Guarantee commission — cumulative balances</div>
+      <div class="panel"><div class="tw"><table>
+        <thead><tr><th style="text-align:left">Year</th><th>1%</th><th>2%</th><th>3%</th><th>4%</th><th>5%</th><th>6%</th><th>7%</th></tr></thead>
+        <tbody id="comm-body"></tbody>
+      </table></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="sec"><div class="stitle">Reinvestment income</div>
+        <div class="panel"><div class="tw"><table>
+          <thead><tr><th style="text-align:left">Year</th><th>1%</th><th>2%</th><th>3%</th><th>4%</th></tr></thead>
+          <tbody id="reinv-body"></tbody>
+        </table></div></div>
+      </div>
+      <div class="sec"><div class="stitle">Cumulative income</div>
+        <div class="panel"><div class="tw"><table>
+          <thead><tr><th style="text-align:left">Year</th><th>1%</th><th>2%</th><th>3%</th><th>4%</th></tr></thead>
+          <tbody id="cuminc-body"></tbody>
+        </table></div></div>
+      </div>
+    </div>
+    <div class="sec"><div class="stitle">Table 2 cashflow detail</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <span class="ctl-lbl">Liquidation year:</span><div class="chips" id="cft-chips"></div>
+        <span class="ctl-lbl" style="margin-left:6px">Rec. fee:</span><div class="chips" id="cfc-chips"></div>
+      </div>
+      <div class="panel"><div class="tw"><table>
+        <thead><tr><th style="text-align:left">Year</th><th>Fee income</th><th>Reinv. income</th><th>Guarantee payout</th><th>Net CF</th><th>Disc. factor</th><th>PV of CF</th></tr></thead>
+        <tbody id="cf-body"></tbody><tfoot id="cf-foot"></tfoot>
+      </table></div>
+      <div class="note">Excel NPV convention: yr0 discounted at period 1.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- right -->
+</div><!-- layout -->
+</div><!-- page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── Active deal universe (5 deals, excl. BEVL / A-Charge / Grit) ──
+// indicative=true: MOIC not from company financial model, estimated by NCGCL
+var DEALS_DEF = [
+  {id:"D1",name:"Vlektra", fullName:"Vlektra", size:855,    bear:0,    base:3.5,  bull:11.03,bearInd:true, baseInd:true, bullInd:false,source:"Climate Core FM"},
+  {id:"D2",name:"Albario", fullName:"Albario", size:400,    bear:4.47, base:5.36, bull:5.96, bearInd:false,baseInd:false,bullInd:false,source:"Climate Core FM"},
+  {id:"D3",name:"Ansaar",  fullName:"Ansaar",  size:1700,   bear:0,    base:3.0,  bull:8.67, bearInd:true, baseInd:true, bullInd:false,source:"Climate Core FM"},
+  {id:"D4",name:"D4",      fullName:"D4",      size:1425,   bear:4.19, base:5.03, bull:5.59, bearInd:false,baseInd:false,bullInd:false,source:"Climate Core FM"},
+  {id:"D5",name:"D5",      fullName:"D5",      size:1299.6, bear:0,    base:6.90, bull:7.67, bearInd:true, baseInd:false,bullInd:false,source:"Climate Core FM"},
+  {id:"D6",name:"Daikin",  fullName:"Daikin",  size:640,    bear:1.5,  base:3.2,  bull:5.5,  bearInd:true, baseInd:true, bullInd:true, source:"Indicative"},
+  {id:"D7",name:"Greeno",  fullName:"Greeno",  size:855,    bear:0,    base:7.34, bull:8.16, bearInd:true, baseInd:false,bullInd:false,source:"Climate Core FM"}
+];
+var DEALS_STATE = DEALS_DEF.map(function(d){return Object.assign({},d);});
+const PD_SCENARIOS = {base:0.5,bull:0.2,bear:0.8};
+// Combinatorial table generated dynamically from DEALS_STATE
+
+
+// ── State ──
+let deployFees=true,recoveriesYes=false;
+let activeT=new Set(),activeCols=new Set([0.01,0.02,0.03,0.04,0.05,0.06,0.07]);
+let cfDetailT=3,cfDetailCol=0.01;
+const RCOLS=[0.01,0.02,0.03,0.04,0.05,0.06,0.07];
+let charts={};
+
+function setTog(k,v){
+  if(k==='d'){deployFees=v;document.getElementById('td1').className='tog'+(v?' on':'');document.getElementById('td0').className='tog'+(!v?' on':'');}
+  else{recoveriesYes=v;document.getElementById('tr1').className='tog'+(v?' on':'');document.getElementById('tr0').className='tog'+(!v?' on':'');}
+  calc();
+}
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.className='tab-pane');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.className='tab-btn');
+  document.getElementById('tab-'+id).className='tab-pane on';
+  btn.className='tab-btn on';
+}
+
+const sldrs={fundSize:v=>'PKR '+(v/1e9).toFixed(2)+'bn',cover:v=>(v*100).toFixed(0)+'%',tenor:v=>String(Math.round(v)),pd:v=>(v*100).toFixed(1)+'%',lgd:v=>(v*100).toFixed(0)+'%',recovery:v=>(v*100).toFixed(0)+'%',upfrontFee:v=>(v*100).toFixed(2)+'%',recurFee:v=>(v*100).toFixed(2)+'%',rfr:v=>(v*100).toFixed(2)+'%',moic:v=>parseFloat(v).toFixed(2)+'x'};
+const sids={fundSize:'v-fs',cover:'v-cv',tenor:'v-tn',pd:'v-pd',lgd:'v-lg',recovery:'v-rc',upfrontFee:'v-uf',recurFee:'v-rf',rfr:'v-rr',moic:'v-moic'};
+Object.keys(sldrs).forEach(id=>{
+  const el=document.getElementById(id),out=document.getElementById(sids[id]);
+  el.addEventListener('input',()=>{if(out)out.textContent=sldrs[id](parseFloat(el.value));calc();});
+  if(out)out.textContent=sldrs[id](parseFloat(el.value));
+});
+function getP(){return{fundSize:parseFloat(document.getElementById('fundSize').value),cover:parseFloat(document.getElementById('cover').value),tenor:parseInt(document.getElementById('tenor').value),pd:parseFloat(document.getElementById('pd').value),lgd:parseFloat(document.getElementById('lgd').value),recovery:parseFloat(document.getElementById('recovery').value),upfrontFee:parseFloat(document.getElementById('upfrontFee').value),recurFee:parseFloat(document.getElementById('recurFee').value),rfr:parseFloat(document.getElementById('rfr').value),moic:parseFloat(document.getElementById('moic').value)};}
+
+function fmtPKR(v,dp){const a=Math.abs(v),s=v<0?'−':'';if(a>=1e9)return s+'PKR '+(a/1e9).toFixed(dp!==undefined?dp:2)+'bn';if(a>=1e6)return s+'PKR '+(a/1e6).toFixed(0)+'M';return s+'PKR '+Math.round(a).toLocaleString();}
+function fmtMn(v){const a=Math.abs(v),s=v<0?'−':'';if(a>=1000)return s+(a/1000).toFixed(1)+'bn';return s+a.toFixed(0)+'M';}
+function fP(v,d=1){return(v*100).toFixed(d)+'%';}
+function fX(v){return v.toFixed(2)+'x';}
+function fMOIC(v){return v>0?v.toFixed(2)+'x':'—';}
+
+function computeModel(p,rfO){
+  const rf=rfO!==undefined?rfO:p.recurFee;
+  const gE=p.fundSize*p.cover,up=p.upfrontFee*gE,aF=rf*gE,rfr=p.rfr;
+  const eLGD=p.lgd*(1-p.recovery),N=16;
+  const cumC=[],riI=[],cumI=[];
+  for(let y=0;y<=N;y++)cumC[y]=up+y*aF;
+  for(let y=0;y<=N;y++)riI[y]=deployFees?cumC[y]*rfr:0;
+  for(let y=0;y<=N;y++){if(y===0){cumI[0]=up;}else{let s=0;for(let i=0;i<=y;i++)s+=riI[i];cumI[y]=cumC[y]+s;}}
+  // MOIC netting:
+  //   Gross loss    = Fund x PD x LGD  (portion that defaults)
+  //   Surviving     = Fund x (1 - PD x LGD)
+  //   Survivor return = Surviving x MOIC
+  //   Net portfolio = Survivor return - Fund  (positive = net gain)
+  //   Payout        = max(0, min(-net portfolio, gE))
+  const grossLoss   = p.fundSize * p.pd * eLGD;
+  const survivingVal= p.fundSize * (1 - p.pd * eLGD);
+  const survivorRet = survivingVal * (p.moic||1);
+  const netPortfolio= survivorRet - p.fundSize;           // negative = net loss
+  const expPayout   = Math.max(0, Math.min(-netPortfolio, gE));
+  const breakEvenMOIC = (eLGD*p.pd < 1) ? 1/(1 - p.pd*eLGD) : Infinity;
+  const t1=[];
+  for(let y=0;y<=p.tenor;y++)t1[y]=(-expPayout)+cumI[y];
+  const npvByT={},cfsByT={};
+  for(let T=3;T<=Math.min(p.tenor,15);T++){
+    const cf=[];
+    for(let y=0;y<=15;y++){if(y>T)cf[y]=0;else if(y===0)cf[y]=up+riI[0];else if(y<T)cf[y]=aF+riI[y];else cf[y]=aF+riI[T]+(-expPayout);if(recoveriesYes&&y===T+5)cf[y]=(cf[y]||0)+expPayout;}
+    cfsByT[T]=cf;npvByT[T]=cf.reduce((s,v,i)=>s+v/Math.pow(1+rfr,i+1),0);
+  }
+  return{gE,up,aF,cumC,riI,cumI,t1,npvByT,cfsByT,eLGD,grossLoss,survivingVal,survivorRet,netPortfolio,expPayout,breakEvenMOIC};
+}
+
+function buildChips(p){
+  const tMax=Math.min(p.tenor,15),vTs=[];
+  for(let T=3;T<=tMax;T++)vTs.push(T);
+  if(activeT.size===0||![...activeT].every(t=>t>=3&&t<=tMax))activeT=new Set(vTs);
+  if(cfDetailT<3||cfDetailT>tMax)cfDetailT=3;
+  document.getElementById('t-chips').innerHTML=vTs.map(T=>`<button class="chip${activeT.has(T)?' on':''}" onclick="toggleT(${T})">${T}</button>`).join('');
+  document.getElementById('col-chips').innerHTML=RCOLS.map(rf=>{const on=activeCols.has(rf),cur=Math.abs(rf-p.recurFee)<0.0001;return`<button class="chip${on?' on':''}${cur?' cur':''}" onclick="toggleCol(${rf})">${fP(rf,0)}</button>`;}).join('');
+  document.getElementById('cft-chips').innerHTML=vTs.map(T=>`<button class="chip${cfDetailT===T?' on':''}" onclick="setCfT(${T})">${T}</button>`).join('');
+  document.getElementById('cfc-chips').innerHTML=RCOLS.map(rf=>`<button class="chip${Math.abs(cfDetailCol-rf)<0.0001?' on':''}" onclick="setCfCol(${rf})">${fP(rf,0)}</button>`).join('');
+}
+function toggleT(T){if(activeT.has(T)){if(activeT.size>1)activeT.delete(T);}else activeT.add(T);calc();}
+function toggleCol(rf){if(activeCols.has(rf)){if(activeCols.size>1)activeCols.delete(rf);}else activeCols.add(rf);calc();}
+function setCfT(T){cfDetailT=T;calc();}
+function setCfCol(rf){cfDetailCol=rf;calc();}
+
+function heatCls(v,all){const pos=all.filter(x=>x>=0),neg=all.filter(x=>x<0);if(v>=0){const mx=Math.max(...pos)||1;return v>mx*0.5?'h-sp':'h-p';}else{const mn=Math.min(...neg)||(-1);return v<mn*0.5?'h-sn':'h-ng';}}
+
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function buildELCharts(p,m){
+  destroyChart("el");
+  var gE=p.fundSize*p.cover;
+  var lbls=Array.from({length:p.tenor+1},function(_,i){return "Yr "+i;});
+  var cumIncMn=Array.from({length:p.tenor+1},function(_,i){return m.cumI[i]/1e6;});
+  var elMn=(gE*p.pd*m.eLGD)/1e6;
+  var elLine=Array(p.tenor+1).fill(elMn);
+  var elCtx=document.getElementById("chart-el").getContext("2d");
+  var elCfg={
+    type:"bar",
+    data:{
+      labels:lbls,
+      datasets:[
+        {label:"Cumulative reserve income",data:cumIncMn,backgroundColor:"rgba(78,107,88,0.25)",borderColor:"#4E6B58",borderWidth:1.5,borderRadius:3},
+        {label:"Total EL (single event)",data:elLine,type:"line",borderColor:"#8C3D2C",borderWidth:2,borderDash:[5,4],pointRadius:0,fill:false}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{font:{family:"Inter",size:11},color:"#5C463A"}},
+        tooltip:{callbacks:{label:function(ti){return ti.dataset.label+": PKR "+ti.parsed.y.toFixed(0)+"M";}}}
+      },
+      scales:{
+        x:{ticks:{font:{family:"Inter",size:10},color:"#8B7565"},grid:{color:"rgba(214,208,200,0.5)"}},
+        y:{ticks:{font:{family:"Inter",size:10},color:"#8B7565",callback:function(v){return "PKR "+v+"M";}},grid:{color:"rgba(214,208,200,0.5)"}}
+      }
+    }
+  };
+  charts["el"]=new Chart(elCtx,elCfg);
+}
+
+
+// ── Combinatorial engine ──────────────────────────────────────────────────────
+function buildCombos(scenario) {
+  // scenario: 'bear'|'base'|'bull'
+  var deals = DEALS_STATE;
+  var N = deals.length;
+  var combos = [];
+  var total = (1 << N) - 1; // 2^N - 1 non-empty subsets
+  for (var mask = 1; mask <= total; mask++) {
+    var bits = [], inv = 0, term = 0;
+    for (var i = 0; i < N; i++) {
+      var bit = (mask >> i) & 1;
+      bits.push(bit);
+      if (bit) { inv += deals[i].size; term += deals[i].size * deals[i][scenario]; }
+    }
+    combos.push({mask:mask, n:bits.reduce(function(a,b){return a+b;},0), d:bits, inv:inv, term:term, delta:term-inv});
+  }
+  return combos;
+}
+
+function portfolioSummary(combos, deals) {
+  var N = deals.length;
+  var bySize = {};
+  for (var k = 1; k <= N; k++) bySize[k] = [];
+  combos.forEach(function(c){ bySize[c.n].push(c); });
+  var rows = [];
+  for (var k = 1; k <= N; k++) {
+    var arr = bySize[k];
+    if (!arr.length) continue;
+    var nLoss = arr.filter(function(c){return c.delta < 0;}).length;
+    var avgInv  = arr.reduce(function(s,c){return s+c.inv;},0) / arr.length;
+    var avgTerm = arr.reduce(function(s,c){return s+c.term;},0) / arr.length;
+    var avgDelta = avgTerm - avgInv;
+    rows.push({k:k, total:arr.length, nLoss:nLoss, pTrig:nLoss/arr.length, avgInv:avgInv, avgTerm:avgTerm, avgDelta:avgDelta});
+  }
+  return rows;
+}
+
+// ── Render deal input table ───────────────────────────────────────────────────
+function renderDealInputs() {
+  var deals = DEALS_STATE;
+  function moicCell(val, isInd) {
+    var ind = isInd ? '<span style="color:var(--taupe);font-size:9px"> *</span>' : '';
+    var cls = val > 1 ? 'tp' : val > 0 ? 'tn' : 'tg';
+    return '<td class="'+cls+'">'+(val > 0 ? val.toFixed(2)+'x' : '—')+ind+'</td>';
+  }
+  var rows = deals.map(function(d) {
+    var srcBadge = d.source === 'Indicative'
+      ? '<span style="font-size:9px;background:var(--warn-bg);color:var(--warn);padding:1px 5px;border-radius:2px;font-weight:600">Indicative</span>'
+      : '<span style="font-size:9px;background:var(--pos-bg);color:var(--pos);padding:1px 5px;border-radius:2px;font-weight:600">FM</span>';
+    return '<tr>'
+      + '<td><strong>'+d.id+'</strong></td>'
+      + '<td style="font-size:11px;color:var(--text2)">'+d.name+'</td>'
+      + '<td class="tn">'+d.size.toFixed(0)+'</td>'
+      + moicCell(d.bear, d.bearInd)
+      + moicCell(d.base, d.baseInd)
+      + moicCell(d.bull, d.bullInd)
+      + '<td>'+srcBadge+'</td>'
+      + '</tr>';
+  }).join('');
+  document.getElementById('deal-input-body').innerHTML = rows;
+  deals.forEach(function(d,i){ var el=document.getElementById('ch-d'+(i+1)); if(el) el.textContent=d.id; });
+}
+
+function updateDeal(idx, field, val) {
+  DEALS_STATE[idx][field] = parseFloat(val) || 0;
+  renderPortfolioAnalytics();
+}
+
+// ── Render PD scenario cards ──────────────────────────────────────────────────
+function renderPDScenarioCards() {
+  var scens = [
+    {label:'Bull scenario',key:'bull',pd:PD_SCENARIOS.bull,cls:'sp',desc:'Low default probability'},
+    {label:'Base scenario',key:'base',pd:PD_SCENARIOS.base,cls:'sw',desc:'Central assumption'},
+    {label:'Bear scenario',key:'bear',pd:PD_SCENARIOS.bear,cls:'sg',desc:'Stressed default probability'}
+  ];
+  document.getElementById('pd-scenario-cards').innerHTML = scens.map(function(s){
+    return '<div class="score '+s.cls+'" style="padding:12px 14px">'
+      + '<div class="sc-lbl">'+s.label+'</div>'
+      + '<div class="sc-val">PD '+fP(s.pd)+'</div>'
+      + '<div class="sc-sub">'+s.desc+'<br>Used in guarantee calculator EL tab</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── Render portfolio analytics ────────────────────────────────────────────────
+function renderPortfolioAnalytics() {
+  renderDealInputs();
+
+  var combosBase = buildCombos('base');
+  var combosBear = buildCombos('bear');
+  var combosBull = buildCombos('bull');
+  var summBase   = portfolioSummary(combosBase, DEALS_STATE);
+
+  // P(trigger) summary table removed — data shown in live chart
+
+  // Full combo table
+  // Update combo section title with live count
+  var comboStitle = document.getElementById('combo-stitle');
+  if(comboStitle) comboStitle.textContent = 'Full combinatorial table — base scenario (' + combosBase.length + ' combinations, ' + DEALS_STATE.length + ' deals)';
+
+  var comboRows = combosBase.map(function(c,i){
+    return '<tr>'
+      + '<td style="color:var(--text3);font-size:10px">'+(i+1)+'</td>'
+      + '<td class="tn">'+c.n+'</td>'
+      + c.d.map(function(v){return '<td class="'+(v?'tn tb':'')+'" style="'+(v?'':'color:var(--border2)')+'">'+( v?'&#10003;':'&middot;')+'</td>';}).join('')
+      + '<td class="tn">PKR '+c.inv.toFixed(0)+'Mn</td>'
+      + '<td class="'+(c.term>0?'tp':'tn')+'">PKR '+c.term.toFixed(0)+'Mn</td>'
+      + '<td class="'+(c.delta>=0?'tp tb':'tg tb')+'">'+(c.delta>=0?'+':'')+c.delta.toFixed(0)+'</td>'
+      + '</tr>';
+  }).join('');
+  document.getElementById('combo-body').innerHTML = comboRows;
+
+  // Rebuild charts
+  buildPortCharts(combosBase, combosBear, combosBull, summBase);
+}
+
+function buildPortCharts(combosBase, combosBear, combosBull, summBase) {
+  var pal = {neg:"#8C3D2C", ash:"#8A8580", pos:"#4E6B58"};
+
+  // P(trigger) line chart — live, all 3 scenarios, by number of deals
+  destroyChart("ptrig");
+  var summBear = portfolioSummary(combosBear, DEALS_STATE);
+  var summBull = portfolioSummary(combosBull, DEALS_STATE);
+  var sizeLabels = summBase.map(function(r){return r.k+" deal"+(r.k>1?"s":"");});
+  var ctx2 = document.getElementById("chart-ptrig");
+  if(!ctx2) return;
+  charts["ptrig"] = new Chart(ctx2.getContext("2d"),{
+    type:"line",
+    data:{
+      labels:sizeLabels,
+      datasets:[
+        {label:"Bear",data:summBear.map(function(r){return r.pTrig*100;}),borderColor:pal.neg,backgroundColor:"rgba(140,61,44,0.07)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:pal.neg,fill:true,tension:0.25},
+        {label:"Base",data:summBase.map(function(r){return r.pTrig*100;}),borderColor:pal.ash,backgroundColor:"rgba(138,133,128,0.07)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:pal.ash,fill:true,tension:0.25},
+        {label:"Bull",data:summBull.map(function(r){return r.pTrig*100;}),borderColor:pal.pos,backgroundColor:"rgba(78,107,88,0.07)",borderWidth:2.5,pointRadius:5,pointBackgroundColor:pal.pos,fill:true,tension:0.25}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{font:{family:"Inter",size:11},color:"#5C463A",boxWidth:14}},
+        tooltip:{callbacks:{
+          label:function(c){return c.dataset.label+": "+c.parsed.y.toFixed(1)+"%";},
+          afterBody:function(items){
+            var k = items[0].dataIndex+1;
+            var n = 0;
+            for(var m2=1;m2<=(1<<k)-1;m2++) n++;
+            return "N="+k+" deals, "+n+" combinations";
+          }
+        }}
+      },
+      scales:{
+        x:{ticks:{font:{family:"Inter",size:11},color:"#5C463A"},grid:{display:false},title:{display:true,text:"Number of deals in sub-portfolio",font:{family:"Inter",size:10},color:"#8B7565"}},
+        y:{min:0,max:100,ticks:{font:{family:"Inter",size:10},color:"#8B7565",callback:function(v){return v+"%";}},grid:{color:"rgba(214,208,200,0.5)"},title:{display:true,text:"P(guarantee trigger)",font:{family:"Inter",size:10},color:"#8B7565"}}
+      }
+    }
+  });
+}
+
+
+function calc(){
+  var p=getP();
+  var gE=p.fundSize*p.cover;
+
+  var errs=[];
+  if(p.pd>0.7)errs.push('PD > 70% is stress-scenario territory.');
+  if(p.lgd===1.0&&p.pd>0.3)errs.push('LGD = 100% with PD > 30% is very severe. Senior debt LGD typically 40-60%.');
+  if(p.upfrontFee+p.recurFee*p.tenor<p.pd*p.lgd*(1-p.recovery)*0.3)errs.push('Total fees may be insufficient to cover 30% of Total EL. Check pricing.');
+  document.getElementById('errBox').innerHTML=errs.length
+    ?'<div class="err-box"><div class="err-title">Flagged conditions</div>'+errs.map(function(e){return'<div class="err-item">'+e+'</div>';}).join('')+'</div>':'';
+
+  var m=computeModel(p);
+  var tMax=Math.min(p.tenor,15);
+
+  // MOIC netting — expose all model outputs
+  var cumI       = m.cumI[p.tenor];
+  var coverage   = cumI / gE;
+  var t1F        = m.t1[p.tenor];
+  var expPayout  = m.expPayout;       // guarantee payout after MOIC netting, capped at gE
+  var annualEL   = expPayout / p.tenor;
+  var survivorRet= m.survivorRet;
+  var netPort    = m.netPortfolio;
+  var breakEven  = m.breakEvenMOIC;
+
+  var covCls  = coverage>=1?'sp':coverage>=0.5?'sw':'sg';
+  var posCls  = t1F>=0?'sp':'sg';
+  var payoutCls = expPayout<=0?'sp':expPayout<gE*0.5?'sw':'sg';
+  var triggerCls = netPort>=0?'sp':'sg';
+
+  document.getElementById('scores').innerHTML=
+     '<div class="score sn">'
+    +'  <div class="sc-lbl">Guaranteed exposure</div>'
+    +'  <div class="sc-val">'+fmtPKR(gE)+'</div>'
+    +'  <div class="sc-sub">'+fP(p.cover)+' cover &times; '+fmtPKR(p.fundSize,1)+' fund</div>'
+    +'</div>'
+    +'<div class="score '+triggerCls+'">'
+    +'  <div class="sc-lbl">Net portfolio (MOIC-adjusted)</div>'
+    +'  <div class="sc-val">'+fmtPKR(netPort)+'</div>'
+    +'  <div class="sc-sub">Survivors '+fmtPKR(survivorRet)+' &minus; fund '+fmtPKR(p.fundSize,1)+'</div>'
+    +'</div>'
+    +'<div class="score '+payoutCls+'">'
+    +'  <div class="sc-lbl">Expected guarantee payout</div>'
+    +'  <div class="sc-val">'+fmtPKR(expPayout)+'</div>'
+    +'  <div class="sc-sub">Capped at gE &middot; Annual accrual '+fmtPKR(annualEL)+'</div>'
+    +'</div>'
+    +'<div class="score '+covCls+'">'
+    +'  <div class="sc-lbl">Reserve coverage @ yr '+p.tenor+'</div>'
+    +'  <div class="sc-val">'+fX(coverage)+'</div>'
+    +'  <div class="sc-sub">Break-even MOIC: '+( isFinite(breakEven)?breakEven.toFixed(2)+'x':'n/a')+'</div>'
+    +'  <div class="sc-bar"><div class="sc-fill" style="width:'+Math.min(coverage,1)*100+'%"></div></div>'
+    +'</div>';
+
+  buildChips(p);
+
+  // Table 1
+  var h='';
+  for(var y=0;y<=p.tenor;y++){
+    h+='<tr><td>Year '+y+'</td>';
+    RCOLS.forEach(function(rf){var v=computeModel(p,rf).t1[y];h+='<td class="'+(v>=0?'tp':'tg')+'">'+fmtPKR(v)+'</td>';});
+    h+='</tr>';
+  }
+  document.getElementById('t1-body').innerHTML=h;
+
+  // Table 2
+  var visT=[],visC=RCOLS.filter(function(rf){return activeCols.has(rf);});
+  for(var T=3;T<=tMax;T++)if(activeT.has(T))visT.push(T);
+  var allV=[];
+  visT.forEach(function(T){visC.forEach(function(rf){allV.push(computeModel(p,rf).npvByT[T]||0);});});
+  var th='<tr><th style="text-align:left">T.Year \\ Rec.fee</th>';
+  visC.forEach(function(rf){var cur=Math.abs(rf-p.recurFee)<0.0001;th+='<th class="'+(cur?'t2-ch':'')+'">'+fP(rf,0)+'</th>';});
+  th+='</tr>';
+  document.getElementById('t2-head').innerHTML=th;
+  var tb='';
+  visT.forEach(function(T){
+    tb+='<tr><td>T = '+T+'</td>';
+    visC.forEach(function(rf){var v=computeModel(p,rf).npvByT[T]||0,cur=Math.abs(rf-p.recurFee)<0.0001;tb+='<td class="'+heatCls(v,allV)+(cur?' t2-cc':'')+'">'+fmtPKR(v)+'</td>';});
+    tb+='</tr>';
+  });
+  document.getElementById('t2-body').innerHTML=tb;
+
+  // EL tab
+  var lgdScens=[m.eLGD,m.eLGD*0.6,m.eLGD*0.4];
+  var lgdLabels=['LGD '+fP(m.eLGD),'LGD '+fP(m.eLGD*0.6),'LGD '+fP(m.eLGD*0.4)];
+  var allPDs=[PD_SCENARIOS.bull,p.pd,PD_SCENARIOS.bear];
+  var allPDLabels=['Bull','Base','Bear'];
+  var pdScens=[
+    {label:'Bull (low loss)',pd:PD_SCENARIOS.bull,cls:'sp'},
+    {label:'Base',pd:p.pd,cls:'sw'},
+    {label:'Bear (high loss)',pd:PD_SCENARIOS.bear,cls:'sg'}
+  ];
+  var elCardsHTML='';
+  pdScens.forEach(function(sc){
+    // MOIC-adjusted payout for this PD scenario
+    var survivorPct2 = 1 - sc.pd*m.eLGD;
+    var survivorRet2 = p.fundSize*survivorPct2*(p.moic||1);
+    var netPort2     = survivorRet2 - p.fundSize;
+    var tEL2 = Math.max(0, Math.min(-netPort2, gE));
+    var aEL2=tEL2/p.tenor,surplus=cumI-tEL2;
+    elCardsHTML+='<div class="el-card '+sc.cls+'"><div class="el-head">'+sc.label+' - PD '+fP(sc.pd)+'</div>'
+      +'<div class="el-row"><span class="el-row-lbl">Total EL (one-time)</span><span class="el-row-val">'+fmtPKR(tEL2)+'</span></div>'
+      +'<div class="el-row-sub" style="text-align:right;margin-top:-4px;margin-bottom:6px">Guaranteed exp x PD x net-LGD</div>'
+      +'<div class="el-divider"></div>'
+      +'<div class="el-row"><span class="el-row-lbl">Annual EL (/ '+p.tenor+' yrs)</span><span class="el-row-val">'+fmtPKR(aEL2)+'</span></div>'
+      +'<div class="el-divider"></div>'
+      +'<div class="el-row"><span class="el-row-lbl">Reserve surplus/(deficit)</span><span class="el-row-val">'+fmtPKR(surplus)+'</span></div>'
+      +'</div>';
+  });
+  document.getElementById('el-cards').innerHTML=elCardsHTML;
+
+  var elRows='';
+  allPDs.forEach(function(pd,pi){
+    lgdScens.forEach(function(lgd,li){
+      var survPct3 = 1 - pd*lgd;
+      var survRet3 = p.fundSize*survPct3*(p.moic||1);
+      var netP3    = survRet3 - p.fundSize;
+      var tEL2 = Math.max(0, Math.min(-netP3, gE));
+      var aEL2=tEL2/p.tenor,cov3=tEL2>0?cumI/tEL2:Infinity,ok=cov3>=1;
+      elRows+='<tr><td>'+allPDLabels[pi]+' / '+lgdLabels[li]+'</td><td>'+fP(pd)+'</td><td>'+fP(lgd)+'</td>'
+        +'<td class="tg">'+fmtPKR(tEL2)+'</td><td class="tn">'+fmtPKR(aEL2)+'</td>'
+        +'<td class="tp">'+fmtPKR(cumI)+'</td>'
+        +'<td class="'+(ok?'tp':'tg')+' tb">'+fX(cov3)+'</td>'
+        +'<td><span class="badge '+(ok?'b-pos':'b-neg')+'">'+(ok?'Covered':'Shortfall')+'</span></td></tr>';
+    });
+  });
+  document.getElementById('el-body').innerHTML=elRows;
+  buildELCharts(p,m);
+
+  // Portfolio tab
+  renderPDScenarioCards();
+  renderPortfolioAnalytics();
+
+  // Underlying tables
+  var sub4=[0.01,0.02,0.03,0.04];
+  var ch='';
+  for(var y=0;y<=p.tenor;y++){
+    ch+='<tr><td>Year '+y+'</td>';
+    RCOLS.forEach(function(rf){ch+='<td class="tn">'+fmtPKR(computeModel(p,rf).cumC[y])+'</td>';});
+    ch+='</tr>';
+  }
+  ch+='<tr><td><strong>Total</strong></td>';
+  RCOLS.forEach(function(rf){ch+='<td class="tb tn">'+fmtPKR(computeModel(p,rf).cumC[p.tenor])+'</td>';});
+  ch+='</tr>';
+  document.getElementById('comm-body').innerHTML=ch;
+
+  var rh='',ih='';
+  for(var y=0;y<=p.tenor;y++){
+    rh+='<tr><td>Year '+y+'</td>';ih+='<tr><td>Year '+y+'</td>';
+    sub4.forEach(function(rf){
+      var mv=computeModel(p,rf);
+      rh+='<td class="'+(deployFees?'tp':'tn')+'">'+fmtPKR(mv.riI[y])+'</td>';
+      var cov=mv.cumI[y]/gE;
+      ih+='<td class="'+(cov>=1?'tp':cov>=0.3?'tn':'tg')+'">'+fmtPKR(mv.cumI[y])+'</td>';
+    });
+    rh+='</tr>';ih+='</tr>';
+  }
+  rh+='<tr><td><strong>Total</strong></td>';
+  sub4.forEach(function(rf){var mv=computeModel(p,rf);var t=0;for(var y=0;y<=p.tenor;y++)t+=mv.riI[y];rh+='<td class="'+(deployFees?'tp tb':'tn tb')+'">'+fmtPKR(t)+'</td>';});
+  rh+='</tr>';
+  document.getElementById('reinv-body').innerHTML=rh;
+  document.getElementById('cuminc-body').innerHTML=ih;
+
+  var mv=computeModel(p,cfDetailCol);
+  var cfs=mv.cfsByT[Math.max(3,Math.min(cfDetailT,tMax))]||[];
+  var rfr=p.rfr;
+  var cf='',npvS=0;
+  for(var y=0;y<=15;y++){
+    var fee=y===0?mv.up:(y<=cfDetailT?mv.aF:0);
+    var ri=y<=cfDetailT?mv.riI[y]:0;
+    var py=y===cfDetailT?(-mv.gE):(recoveriesYes&&y===cfDetailT+5?mv.gE*p.pd*mv.eLGD:0);
+    var net=cfs[y]||0,df=1/Math.pow(1+rfr,y+1),pv=net*df;
+    npvS+=pv;
+    if(net===0&&y>cfDetailT)continue;
+    var tTag=y===cfDetailT?' <span style="font-size:9px;color:var(--walnut);font-weight:600">T</span>':'';
+    cf+='<tr><td>Year '+y+tTag+'</td><td class="tn">'+(fee?fmtPKR(fee):'--')+'</td><td class="'+(ri>0?'tp':'tn')+'">'+(ri?fmtPKR(ri):'--')+'</td>'
+      +'<td class="'+(py<0?'tg':py>0?'tp':'tn')+'">'+(py?fmtPKR(py):'--')+'</td>'
+      +'<td class="'+(net>=0?'tp':'tg tb')+'">'+fmtPKR(net)+'</td>'
+      +'<td class="tn">'+df.toFixed(4)+'</td>'
+      +'<td class="'+(pv>=0?'tp':'tg')+'">'+fmtPKR(pv)+'</td></tr>';
+  }
+  document.getElementById('cf-body').innerHTML=cf;
+  document.getElementById('cf-foot').innerHTML='<tr><td colspan="6" style="text-align:right;font-family:var(--sans);font-size:11px;color:var(--text2)">NPV @ RFR '+fP(rfr)+'</td><td class="'+(npvS>=0?'tp tb':'tg tb')+'">'+fmtPKR(npvS)+'</td></tr>';
+}
+
+calc();
+</script>
+</body>
+</html>
