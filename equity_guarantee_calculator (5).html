@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NCGCL — Equity Guarantee Pricing Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --w:#5C3D2E;--b:#8B6B4F;--t:#C4A882;--mu:#E8D9C4;--ash:#9BA0A6;
+  --sl:#3D4550;--cr:#F7F2EC;--ink:#1E1A16;--go:#C49A3C;--gl:#E8C97A;
+  --re:#8B3A3A;--gr:#2E5E3E;--grl:#4A8C62;
+  --bd:rgba(92,61,46,0.13);--bs:rgba(92,61,46,0.27);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--cr);color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh}
+a{color:inherit}
+
+/* ── HEADER ── */
+header{background:var(--w);display:flex;align-items:center;justify-content:space-between;padding:0 1.8rem;height:54px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.brand{font-family:'Newsreader',serif;font-size:1.05rem;font-weight:600;color:var(--mu)}
+.brand b{color:var(--t);font-weight:600}
+.hsub{font-size:.69rem;color:var(--b);letter-spacing:.03em}
+.rstrip{background:var(--sl);color:var(--mu);font-size:.68rem;text-align:center;padding:.42rem 1.5rem;border-bottom:1px solid var(--w)}
+.rstrip strong{color:var(--gl)}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1300px;margin:0 auto;padding:1.4rem 1.4rem 3rem}
+.r2{display:grid;grid-template-columns:310px 1fr;gap:1.3rem;align-items:start;margin-bottom:1.3rem}
+.r2b{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;margin-bottom:1.3rem}
+.rf{margin-bottom:1.3rem}
+
+/* ── KPI BAR ── */
+.kbar{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:6px;overflow:hidden;margin-bottom:1.3rem}
+.kpi{background:#fff;padding:.7rem .85rem;text-align:center}
+.kl{font-size:.59rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ash);margin-bottom:.18rem}
+.kv{font-family:'Newsreader',serif;font-size:1.12rem;font-weight:600;color:var(--w);line-height:1.1}
+.kv.p{color:var(--gr)} .kv.n{color:var(--re)} .kv.warn{color:var(--go)}
+.ks{font-size:.59rem;color:var(--ash);margin-top:.1rem}
+
+/* ── CARD ── */
+.card{background:#fff;border:1px solid var(--bd);border-radius:6px;overflow:hidden}
+.ch{background:var(--w);color:var(--mu);padding:.5rem 1rem;font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.cb{padding:1rem}
+
+/* ── FORM ── */
+.fi{margin-bottom:.8rem}
+.fi:last-child{margin-bottom:0}
+.fl{display:block;font-size:.63rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--b);margin-bottom:.22rem}
+.fr{display:flex;gap:.45rem;align-items:center}
+input[type=range]{flex:1;accent-color:var(--w);cursor:pointer}
+input[type=number],select{font-family:'Inter',sans-serif;font-size:.76rem;color:var(--ink);background:var(--cr);border:1px solid var(--bs);border-radius:4px;padding:.26rem .5rem;outline:none;width:100%;transition:border .12s}
+input[type=number]:focus,select:focus{border-color:var(--w)}
+.bv{font-size:.74rem;font-weight:700;color:var(--w);min-width:66px;text-align:right;white-space:nowrap}
+.hint{font-size:.6rem;color:var(--ash);margin-top:.15rem;line-height:1.3}
+.st{font-size:.63rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ash);padding-bottom:.3rem;border-bottom:1px solid var(--bd);margin:.9rem 0 .8rem}
+
+/* ── TOGGLE ── */
+.tog{display:flex;border:1px solid var(--bs);border-radius:4px;overflow:hidden}
+.tog button{flex:1;border:none;background:var(--cr);font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;padding:.3rem .45rem;cursor:pointer;color:var(--b);transition:all .12s}
+.tog button.on{background:var(--w);color:var(--mu)}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.74rem}
+th{background:var(--sl);color:var(--mu);padding:.38rem .6rem;text-align:right;font-weight:600;font-size:.62rem;letter-spacing:.04em;white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:.34rem .6rem;border-bottom:1px solid var(--bd);text-align:right;white-space:nowrap;color:var(--ink)}
+td:first-child{text-align:left;font-weight:500;color:var(--sl)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--mu)}
+td.p{color:var(--gr)} td.n{color:var(--re)} td.g{color:var(--go);font-weight:600}
+.tf td{background:var(--mu);font-weight:600;border-top:2px solid var(--bs)}
+
+/* ── IRR ROW ── */
+.iw{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.ird{flex:1;min-width:160px}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:.26rem 0;border-bottom:1px solid var(--bd)}
+.ir:last-child{border-bottom:none}
+.ik{font-size:.63rem;font-weight:500;color:var(--b)}
+.iv{font-family:'Newsreader',serif;font-weight:600;font-size:.9rem;color:var(--w)}
+
+/* ── PD BAR ── */
+.pdb{height:6px;border-radius:3px;background:linear-gradient(to right,var(--grl),var(--go),var(--re));margin:.4rem 0;position:relative}
+.pdp{position:absolute;top:-5px;width:14px;height:14px;background:var(--w);border-radius:50%;border:2px solid #fff;transform:translateX(-50%);transition:left .2s}
+.pdl{display:flex;justify-content:space-between;font-size:.57rem;color:var(--ash)}
+
+/* ── TAGS ── */
+.rbr{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.35rem}
+.rbt{background:var(--mu);border:1px solid var(--t);border-radius:3px;padding:.18rem .45rem;font-size:.66rem;color:var(--w)}
+
+/* ── NOTE ── */
+.nb{background:#fff8ec;border-left:3px solid var(--go);padding:.7rem .9rem;font-size:.74rem;color:var(--sl);margin-bottom:1.3rem;line-height:1.5;border-radius:0 4px 4px 0}
+.nb strong{color:var(--w)}
+
+@media(max-width:900px){.r2{grid-template-columns:1fr}.r2b{grid-template-columns:1fr}.kbar{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.kbar{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><b>NCGCL</b> — Equity Guarantee Pricing Calculator</div>
+  <div class="hsub">Internal Use Only · v4</div>
+</header>
+<div class="rstrip">
+  <strong>⚠ Risk Coverage Note:</strong> In case any of the outlined risk assessments are deviated from, NCGCL reserves the right to exclude the investment from its guarantee cover.
+</div>
+
+<div class="wrap">
+
+  <!-- KPI BAR -->
+  <div class="kbar">
+    <div class="kpi"><div class="kl">Guaranteed Exposure</div><div class="kv" id="kGE">—</div><div class="ks">Fund × Coverage%</div></div>
+    <div class="kpi"><div class="kl">Expected Payout</div><div class="kv n" id="kMP">—</div><div class="ks">PD × LGD × min(Exp, IC−NAV)</div></div>
+    <div class="kpi"><div class="kl">Total Fees</div><div class="kv p" id="kTF">—</div><div class="ks">incl. origination</div></div>
+    <div class="kpi"><div class="kl">Post-Rebate Fees</div><div class="kv" id="kPRF">—</div><div class="ks">after good-behaviour rebate</div></div>
+    <div class="kpi"><div class="kl">NCGCL IRR</div><div class="kv" id="kIRR">—</div><div class="ks">post-rebate · target 15%</div></div>
+    <div class="kpi"><div class="kl">Net Transaction</div><div class="kv" id="kNT">—</div><div class="ks">fees + reinvestment − payout</div></div>
+  </div>
+
+  <!-- TOP GRID -->
+  <div class="r2">
+
+    <!-- INPUTS -->
+    <div class="card">
+      <div class="ch">⚙ Fund Parameters</div>
+      <div class="cb">
+
+        <div class="st">Structure</div>
+
+        <div class="fi">
+          <div class="fl">Fee Structure</div>
+          <div class="tog">
+            <button id="btnO" class="on" onclick="setFee('both')">Origination + Recurring</button>
+            <button id="btnR" onclick="setFee('rec')">Recurring Only</button>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Fund Size (PKR)</div>
+          <div class="fr">
+            <input type="range" id="sFund" min="1e9" max="30e9" step="5e8" value="8.5e9"
+                   oninput="sb(this,'dFund',bkr); snum('nFund',this.value); calc()">
+            <span class="bv" id="dFund">PKR 8.50B</span>
+          </div>
+          <input type="number" id="nFund" value="8500000000"
+                 oninput="nb2(this,'sFund','dFund',bkr); calc()" style="margin-top:.28rem">
+        </div>
+
+        <div class="fi">
+          <div class="fl">Coverage % (Guarantee / Fund)</div>
+          <div class="fr">
+            <input type="range" id="sCov" min="10" max="70" step="5" value="40"
+                   oninput="sb(this,'dCov',v=>v+'%'); calc()">
+            <span class="bv" id="dCov">40%</span>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Fund Tenor (Years)</div>
+          <div class="fr">
+            <input type="range" id="sTen" min="5" max="15" step="1" value="10"
+                   oninput="sb(this,'dTen',v=>v+' yrs'); calc()">
+            <span class="bv" id="dTen">10 yrs</span>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Termination / Liquidation Year</div>
+          <select id="sTerm" onchange="calc()">
+            <option value="4">Year 4</option>
+            <option value="5">Year 5</option>
+            <option value="6">Year 6</option>
+            <option value="7">Year 7</option>
+            <option value="8" selected>Year 8</option>
+          </select>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Invested Capital (PKR)</div>
+          <div class="fr">
+            <input type="range" id="sIC" min="1e9" max="30e9" step="5e8" value="8.5e9"
+                   oninput="sb(this,'dIC',bkr); snum('nIC',this.value); calc()">
+            <span class="bv" id="dIC">PKR 8.50B</span>
+          </div>
+          <input type="number" id="nIC" value="8500000000"
+                 oninput="nb2(this,'sIC','dIC',bkr); calc()" style="margin-top:.28rem">
+          <div class="hint">Payout = max(Guaranteed Exposure, Invested Capital − NAV) when NAV &lt; IC</div>
+        </div>
+
+        <div class="st">Pricing</div>
+
+        <div class="fi" id="fOrig">
+          <div class="fl">Origination / Upfront Fee %</div>
+          <div class="fr">
+            <input type="range" id="sOrig" min="0" max="5" step="0.25" value="1"
+                   oninput="sb(this,'dOrig',v=>pf(v,2)+'%'); calc()">
+            <span class="bv" id="dOrig">1.00%</span>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Recurring Fee % (on NAV)</div>
+          <div class="fr">
+            <input type="range" id="sRec" min="0.25" max="5" step="0.25" value="1"
+                   oninput="sb(this,'dRec',v=>pf(v,2)+'%'); calc()">
+            <span class="bv" id="dRec">1.00%</span>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">NAV Premium Cap (±bps)</div>
+          <div class="fr">
+            <input type="range" id="sBps" min="5" max="50" step="5" value="25"
+                   oninput="sb(this,'dBps',v=>v+' bps'); calc()">
+            <span class="bv" id="dBps">25 bps</span>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Investment Period (yrs — fee on NAV after)</div>
+          <div class="fr">
+            <input type="range" id="sIP" min="1" max="7" step="1" value="3"
+                   oninput="sb(this,'dIP',v=>v+' yrs'); calc()">
+            <span class="bv" id="dIP">3 yrs</span>
+          </div>
+        </div>
+
+        <div class="st">Risk Parameters</div>
+
+        <div class="fi">
+          <div class="fl">PD % (scales with fund size)</div>
+          <div class="fr">
+            <input type="range" id="sPD" min="0.5" max="75" step="0.5" value="1"
+                   oninput="sb(this,'dPD',v=>pf(v,2)+'%'); calc()">
+            <span class="bv" id="dPD">1.00%</span>
+          </div>
+          <div class="pdb"><div class="pdp" id="pdp"></div></div>
+          <div class="pdl"><span>0.5%</span><span>25%</span><span>50%</span><span>75%</span></div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">LGD %</div>
+          <div class="fr">
+            <input type="range" id="sLGD" min="10" max="100" step="5" value="100"
+                   oninput="sb(this,'dLGD',v=>v+'%'); calc()">
+            <span class="bv" id="dLGD">100%</span>
+          </div>
+        </div>
+
+        <div class="fi">
+          <div class="fl">Risk-Free Rate (Discount)</div>
+          <div class="fr">
+            <input type="range" id="sRFR" min="5" max="25" step="0.5" value="13"
+                   oninput="sb(this,'dRFR',v=>pf(v,2)+'%'); calc()">
+            <span class="bv" id="dRFR">13.00%</span>
+          </div>
+        </div>
+
+        <div class="st">Good Behaviour Rebate</div>
+
+        <div class="fi">
+          <div class="fl">Rebate on Commission (if no default)</div>
+          <div class="fr">
+            <input type="range" id="sReb" min="0" max="40" step="5" value="0"
+                   oninput="sb(this,'dReb',v=>v+'%'); calc()">
+            <span class="bv" id="dReb">0%</span>
+          </div>
+          <div class="rbr" id="rbr"></div>
+        </div>
+
+      </div>
+    </div><!-- /inputs -->
+
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:1.3rem">
+
+      <!-- IRR GAUGE -->
+      <div class="card">
+        <div class="ch">◎ NCGCL IRR Analysis</div>
+        <div class="cb">
+          <div class="iw">
+            <svg width="155" height="86" viewBox="0 0 160 90" style="flex-shrink:0">
+              <defs>
+                <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#8B3A3A"/>
+                  <stop offset="40%" stop-color="#C49A3C"/>
+                  <stop offset="70%" stop-color="#4A8C62"/>
+                  <stop offset="100%" stop-color="#2E5E3E"/>
+                </linearGradient>
+              </defs>
+              <path d="M10 80 A70 70 0 0 1 150 80" fill="none" stroke="#e8d9c4" stroke-width="11" stroke-linecap="round"/>
+              <path id="gF" d="M10 80 A70 70 0 0 1 150 80" fill="none" stroke="url(#gg)" stroke-width="11" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset .5s ease"/>
+              <line id="gN" x1="80" y1="80" x2="80" y2="23" stroke="#5C3D2E" stroke-width="2.5" stroke-linecap="round" style="transform-origin:80px 80px;transition:transform .5s ease"/>
+              <circle cx="80" cy="80" r="4.5" fill="#5C3D2E"/>
+              <text x="10" y="90" font-family="Inter,sans-serif" font-size="8" fill="#9BA0A6">0%</text>
+              <text x="126" y="90" font-family="Inter,sans-serif" font-size="8" fill="#9BA0A6">30%</text>
+              <text x="80" y="15" font-family="Newsreader,serif" font-size="12" font-weight="600" fill="#5C3D2E" text-anchor="middle" id="gL">—</text>
+            </svg>
+            <div class="ird">
+              <div class="ir"><span class="ik">Post-Rebate IRR</span><span class="iv" id="iN">—</span></div>
+              <div class="ir"><span class="ik">Target IRR</span><span class="iv" style="color:var(--go)">15.00%</span></div>
+              <div class="ir"><span class="ik">IRR vs Target</span><span class="iv" id="iD">—</span></div>
+              <div class="ir"><span class="ik">Cost-to-Income</span><span class="iv" style="color:var(--ash)">20.00%</span></div>
+              <div class="ir"><span class="ik">Net Margin (est.)</span><span class="iv" id="iM">—</span></div>
+              <div class="ir"><span class="ik">Reinvestment Income</span><span class="iv p" id="iReinv">—</span></div>
+              <div class="ir"><span class="ik">Guarantee Payout</span><span class="iv n" id="iPay">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASHFLOW TABLE -->
+      <div class="card">
+        <div class="ch">≡ Annual Cash Flow Summary</div>
+        <div class="cb">
+          <div class="tw">
+            <table>
+              <thead><tr>
+                <th style="text-align:left">Year</th>
+                <th>NAV Base</th><th>Recurring Fee</th><th>Orig. Fee</th>
+                <th>Total Inflow</th><th>Reinv. Income</th><th>EL Charge</th><th>Net</th>
+              </tr></thead>
+              <tbody id="cfB"></tbody>
+              <tfoot id="cfF"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /r2 -->
+
+  <!-- MOIC SENSITIVITY -->
+  <div class="rf">
+    <div class="card">
+      <div class="ch">◈ MOIC Sensitivity — NCGCL IRR vs Portfolio MOIC (post-PD NAV)</div>
+      <div class="cb">
+        <p style="font-size:.73rem;color:var(--b);margin-bottom:.85rem;font-style:italic;line-height:1.5">
+          MOIC applied to <strong style="font-style:normal">post-default NAV</strong> (terminal NAV after PD×LGD crystallises).
+          Green = no payout zone · Red = payout triggered · Dashed gold = 15% target · Dashed red = breakeven threshold.
+        </p>
+        <div style="display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;margin-bottom:.9rem">
+          <div style="flex:1;min-width:200px">
+            <div class="fl">Scenario MOIC — drag to explore</div>
+            <div class="fr">
+              <input type="range" id="sMOIC" min="0.1" max="3.0" step="0.05" value="1.0"
+                     oninput="onMOIC()">
+              <span class="bv" style="font-family:'Newsreader',serif;font-size:1.05rem" id="lMOIC">1.00x</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,auto);gap:.25rem .9rem;font-size:.7rem">
+            <span style="color:var(--ash);font-weight:700">Post-PD NAV</span>
+            <span style="color:var(--ash);font-weight:700">Payout</span>
+            <span style="color:var(--ash);font-weight:700">NCGCL IRR</span>
+            <strong id="mNAV" style="color:var(--w)">—</strong>
+            <strong id="mPay" style="color:var(--re)">—</strong>
+            <strong id="mIRR" style="color:var(--w)">—</strong>
+          </div>
+        </div>
+        <svg id="mChart" width="100%" viewBox="0 0 760 220" preserveAspectRatio="xMidYMid meet" style="display:block;overflow:visible"></svg>
+        <div style="display:flex;gap:1rem;margin-top:.5rem;flex-wrap:wrap;font-size:.64rem;color:var(--sl)">
+          <span><svg width="18" height="9"><line x1="0" y1="4.5" x2="18" y2="4.5" stroke="#4A8C62" stroke-width="2.4"/></svg> Safe (no payout)</span>
+          <span><svg width="18" height="9"><line x1="0" y1="4.5" x2="18" y2="4.5" stroke="#C47A5A" stroke-width="2.4"/></svg> Payout triggered</span>
+          <span><svg width="18" height="9"><line x1="0" y1="4.5" x2="18" y2="4.5" stroke="#C49A3C" stroke-width="1.4" stroke-dasharray="4,3"/></svg> 15% Target</span>
+          <span><svg width="18" height="9"><line x1="0" y1="4.5" x2="18" y2="4.5" stroke="#8B3A3A" stroke-width="1.4" stroke-dasharray="2,2"/></svg> Breakeven</span>
+          <span><svg width="12" height="9"><circle cx="6" cy="4.5" r="4" fill="#5C3D2E"/></svg> Selected MOIC</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM GRID -->
+  <div class="r2b">
+
+    <div class="card">
+      <div class="ch">◉ MOIC Breakeven Detail</div>
+      <div class="cb">
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th style="text-align:left">MOIC</th>
+              <th>Post-PD NAV</th><th>NAV Shortfall</th>
+              <th>Payout</th><th>NCGCL IRR</th><th>Status</th>
+            </tr></thead>
+            <tbody id="mTab"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:.6rem;font-size:.66rem;color:var(--ash)">
+          Breakeven MOIC: <strong id="beLbl" style="color:var(--w)">—</strong>&nbsp;|&nbsp;
+          IRR @ breakeven: <strong id="beIRR" style="color:var(--gr)">—</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">∿ NPV by Termination Year</div>
+      <div class="cb">
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th style="text-align:left">Term Year</th>
+              <th>Gross Fees</th><th>Reinv. Income</th><th>EL (PV)</th><th>NPV</th><th>Status</th>
+            </tr></thead>
+            <tbody id="npvB"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NOTE -->
+  <div class="nb">
+    <strong>Coverage Exclusion Notice · </strong>
+    In case any of the outlined risk assessments are deviated from, <strong>NCGCL reserves the right to exclude the investment from its guarantee cover</strong>. This includes but is not limited to deviations in portfolio concentration limits, investment policy adherence, NAV reporting frequency, and GP / Fund Manager governance standards. Guarantee fee obligations remain regardless of coverage exclusion.
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── helpers ──────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const pf = (v,d) => parseFloat(v).toFixed(d);
+const bkr = v => { const n=parseFloat(v); return n>=1e9?'PKR '+(n/1e9).toFixed(2)+'B':n>=1e6?'PKR '+(n/1e6).toFixed(1)+'M':'PKR '+n.toFixed(0); };
+const fB = n => { if(!isFinite(n))return'—'; const s=n<0?'−':'',a=Math.abs(n); return s+(a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(1)+'M':a.toFixed(0)); };
+const fP = (n,d=2) => isFinite(n)?(n*100).toFixed(d)+'%':'—';
+
+// slider → badge (no calc call — caller does that)
+function sb(el, bid, fmt) { $(bid).textContent = fmt ? fmt(el.value) : el.value; }
+// sync number input from slider value
+function snum(nid, v) { const e=$(nid); if(e) e.value = parseFloat(v); }
+// number input → slider + badge
+function nb2(el, sid, bid, fmt) {
+  const v = parseFloat(el.value);
+  if(!isFinite(v)) return;
+  const s=$(sid);
+  s.value = Math.min(Math.max(v, parseFloat(s.min)), parseFloat(s.max));
+  if(fmt) $(bid).textContent = fmt(v);
+}
+
+let feeMode = 'both';
+function setFee(m) {
+  feeMode = m;
+  $('btnO').classList.toggle('on', m==='both');
+  $('btnR').classList.toggle('on', m==='rec');
+  $('fOrig').style.opacity = m==='both'?'1':'0.35';
+  $('fOrig').style.pointerEvents = m==='both'?'':'none';
+  calc();
+}
+
+// ── IRR Newton-Raphson ───────────────────────────────────────
+function IRR(cf) {
+  // Try multiple starting points for robustness
+  const guesses = [0.15, 0.05, 0.30, -0.05, 0.50];
+  for (const g of guesses) {
+    let r = g;
+    for (let i=0; i<300; i++) {
+      let f=0, df=0;
+      for (let t=0; t<cf.length; t++) {
+        const disc = Math.pow(1+r, t);
+        f  += cf[t]/disc;
+        df -= t*cf[t]/Math.pow(1+r, t+1);
+      }
+      if (Math.abs(df) < 1e-15) break;
+      const nr = r - f/df;
+      if (Math.abs(nr-r) < 1e-9) { if(isFinite(nr) && Math.abs(nr)<10) return nr; break; }
+      r = nr;
+      if (!isFinite(r)) break;
+    }
+  }
+  return NaN;
+}
+
+// ── MAIN CALC ────────────────────────────────────────────────
+function calc() {
+  const fundSize  = parseFloat($('sFund').value);
+  const covPct    = parseFloat($('sCov').value)/100;
+  const tenor     = parseInt($('sTen').value);
+  const termYear  = parseInt($('sTerm').value);
+  const investedK = parseFloat($('sIC').value);
+  const origPct   = feeMode==='both' ? parseFloat($('sOrig').value)/100 : 0;
+  const recPct    = parseFloat($('sRec').value)/100;
+  const capBps    = parseFloat($('sBps').value)/10000;
+  const invPer    = parseInt($('sIP').value);
+  const pdPct     = parseFloat($('sPD').value)/100;
+  const lgdPct    = parseFloat($('sLGD').value)/100;
+  const rfr       = parseFloat($('sRFR').value)/100;
+  const rebPct    = parseFloat($('sReb').value)/100;
+
+  // PD pin position
+  $('pdp').style.left = ((pdPct*100 - 0.5)/74.5*100)+'%';
+
+  const exposure   = fundSize * covPct;           // max guarantee = coverage% × fund size
+  const actualTerm = Math.min(termYear, tenor);
+
+  // Terminal NAV at liquidation year (post-investment decay)
+  const termNAV = termYear <= invPer ? fundSize : fundSize * Math.pow(0.92, termYear - invPer);
+
+  // ── PAYOUT: min(guaranteed exposure, max(0, IC − termNAV)) ──
+  // Only triggered if termNAV < IC; capped at full guaranteed exposure
+  const navShortfall = Math.max(0, investedK - termNAV);
+  const expLoss      = Math.min(exposure, navShortfall) * pdPct * lgdPct;
+
+  const origFee  = feeMode==='both' ? exposure * origPct : 0;
+  const recBase  = recPct;
+  const recMin   = Math.max(0, recBase - capBps);
+  const recMax   = recBase + capBps;
+
+  // ── YEAR ROWS ──
+  // EL: single lump charge in the liquidation year only
+  // Reinvestment income: interest earned in year yr on the cumulative post-rebate
+  // fee balance accumulated through end of year (yr-1), i.e. cumBal[yr-1] × RFR
+  const rows = [];
+  let totRec = 0;
+  let cumFeeBalance = 0;
+  for (let yr=0; yr<=actualTerm; yr++) {
+    const nav  = yr===0||yr<=invPer ? fundSize : fundSize*Math.pow(0.92, yr-invPer);
+    const eff  = yr>invPer ? Math.min(recMax, Math.max(recMin, recBase)) : recBase;
+    const rec  = yr===0 ? 0 : nav*eff;
+    const ori  = yr===0 ? origFee : 0;
+    const el   = yr===actualTerm ? expLoss : 0;
+    const reinv = cumFeeBalance * rfr;
+    cumFeeBalance += (rec + ori) * (1 - rebPct);
+    if(yr>0) totRec += rec;
+    rows.push({yr, nav, rec, ori, inflow:rec+ori, el, reinv, net:rec+ori+reinv-el});
+  }
+
+  const grossFees  = origFee + totRec;
+  const rebAmt     = totRec * rebPct;
+  const netFees    = grossFees - rebAmt;
+  const totReinv   = rows.reduce((s,r)=>s+r.reinv, 0);
+  const netTx      = netFees + totReinv - expLoss;
+
+  // ── IRR CASHFLOWS ──
+  // Y0: contingent exposure outflow
+  // Y1–YN: post-rebate fee inflow + reinvestment income each year
+  // YN terminal: recover exposure − payout
+  const cf = [-exposure];
+  for (let yr=1; yr<=actualTerm; yr++) {
+    const r   = rows.find(x=>x.yr===yr);
+    const reb = r ? r.rec*rebPct : 0;
+    const net = r ? (r.inflow - reb) + r.reinv - r.el : 0;
+    cf.push(net);
+  }
+  cf[cf.length-1] += exposure - expLoss;
+  const netIRR = IRR(cf);
+  const netMgn = isFinite(netIRR) ? netIRR*0.80 : NaN;
+
+  // ── NPV BY TERMINATION YEAR (4–8) ──
+  const npvRows=[];
+  for(let ty=4;ty<=8;ty++){
+    const ta=Math.min(ty,tenor);
+    let tyR=0; const tyRowsL=[];
+    let tyCumBal=0;
+    for(let yr=0;yr<=ta;yr++){
+      const nav=yr===0||yr<=invPer?fundSize:fundSize*Math.pow(0.92,yr-invPer);
+      const eff=yr>invPer?Math.min(recMax,Math.max(recMin,recBase)):recBase;
+      const rf=yr===0?0:nav*eff;
+      const of=yr===0?origFee:0;
+      const reinv=tyCumBal*rfr;
+      tyCumBal+=(rf+of)*(1-rebPct);
+      if(yr>0) tyR+=rf;
+      tyRowsL.push({yr,rf,of,reinv});
+    }
+    const tyN  = ty<=invPer ? fundSize : fundSize*Math.pow(0.92,ty-invPer);
+    const tySh = Math.max(0, investedK - tyN);
+    const tyPay= Math.min(exposure, tySh)*pdPct*lgdPct;
+    let npv=0;
+    tyRowsL.forEach(r=>{ npv+=(r.rf+r.of+r.reinv)/Math.pow(1+rfr,r.yr); });
+    const elPV = tyPay/Math.pow(1+rfr,ty);
+    npv -= elPV;
+    npvRows.push({ty, gf:origFee+tyR, reinvTot:tyRowsL.reduce((s,r)=>s+r.reinv,0), elPV, npv});
+  }
+
+  // ── MOIC CURVE (post-PD NAV) ──
+  const postPDBase = termNAV*(1 - pdPct*lgdPct);
+  const moicBE     = postPDBase>0 ? investedK/postPDBase : Infinity;
+  const mpts=[];
+  for(let m=0.10; m<=3.01; m=Math.round((m+0.05)*100)/100){
+    const ppNav  = postPDBase*m;
+    const mSh    = Math.max(0, investedK - ppNav);
+    const mPay   = Math.min(exposure, mSh)*pdPct*lgdPct;
+    const cf2    = [-exposure];
+    for(let yr=1;yr<=actualTerm;yr++){
+      const r   = rows.find(x=>x.yr===yr);
+      const reb = r?r.rec*rebPct:0;
+      const net = r?(r.inflow-reb)+r.reinv-(yr===actualTerm?mPay:0):0;
+      cf2.push(net);
+    }
+    cf2[cf2.length-1] += exposure - mPay;
+    mpts.push({m, ppNav, sh:mSh, pay:mPay, irr:IRR(cf2), trig:mSh>0});
+  }
+  window._mpts=mpts; window._mBE=moicBE;
+
+  // ── RENDER ───────────────────────────────────────────────
+
+  // KPIs
+  $('kGE').textContent=fB(exposure);        $('kGE').className='kv';
+  $('kMP').textContent=fB(-expLoss);
+  $('kTF').textContent=fB(grossFees);       $('kTF').className='kv p';
+  $('kPRF').textContent=fB(netFees);        $('kPRF').className='kv '+(netFees>0?'p':'n');
+  const irrS=isFinite(netIRR)?fP(netIRR):'—';
+  $('kIRR').textContent=irrS;               $('kIRR').className='kv '+(!isFinite(netIRR)?'':netIRR>=.15?'p':netIRR>=.10?'warn':'n');
+  $('kNT').textContent=fB(netTx);           $('kNT').className='kv '+(netTx>=0?'p':'n');
+
+  // IRR panel
+  $('iN').textContent=irrS;
+  const d=isFinite(netIRR)?(netIRR-.15)*100:null;
+  $('iD').textContent=d!==null?(d>=0?'+':'')+d.toFixed(2)+'%':'—';
+  $('iD').style.color=d===null?'':d>=0?'var(--gr)':'var(--re)';
+  $('iM').textContent=isFinite(netMgn)?fP(netMgn):'—';
+  $('iPay').textContent=fB(expLoss);
+  $('iReinv').textContent=fB(totReinv);
+
+  // Gauge
+  const ig=isFinite(netIRR)?Math.min(Math.max(netIRR,0),.30):0;
+  $('gN').style.transform=`rotate(${-90+(ig/.30)*180}deg)`;
+  $('gF').style.strokeDashoffset=220*(1-ig/.30);
+  $('gL').textContent=irrS;
+
+  // Rebate
+  $('rbr').innerHTML=rebPct>0
+    ?`<div class="rbt">Rebate: ${(rebPct*100).toFixed(0)}% of commissions</div><div class="rbt">Amount: ${fB(rebAmt)}</div>`
+    :`<div class="rbt" style="color:var(--ash)">No rebate applied</div>`;
+
+  // Cashflow table
+  const cfB=$('cfB'); cfB.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${r.yr===0?'Y0 (Commit)':'Year '+r.yr}</td>
+      <td>${fB(r.nav)}</td>
+      <td class="${r.rec>0?'p':''}">${fB(r.rec)}</td>
+      <td class="${r.ori>0?'p':''}">${r.ori>0?fB(r.ori):'—'}</td>
+      <td class="${r.inflow>0?'p':''}">${fB(r.inflow)}</td>
+      <td class="${r.reinv>0?'p':''}">${r.reinv>0?fB(r.reinv):'—'}</td>
+      <td class="${r.el>0?'n':''}">${r.el>0?'('+fB(r.el)+')':'—'}</td>
+      <td class="${r.net>0?'p':'n'}">${fB(r.net)}</td>`;
+    cfB.appendChild(tr);
+  });
+  $('cfF').innerHTML=`<tr class="tf">
+    <td>TOTAL</td><td>—</td>
+    <td class="p">${fB(totRec)}</td>
+    <td class="p">${origFee>0?fB(origFee):'—'}</td>
+    <td class="p">${fB(grossFees)}</td>
+    <td class="p">${fB(totReinv)}</td>
+    <td class="n">(${fB(expLoss)})</td>
+    <td class="${netTx>=0?'p':'n'}">${fB(netTx)}</td></tr>`;
+
+  // MOIC breakeven table
+  // Insert the exact breakeven MOIC as an explicit row so the starred entry
+  // always has sh=0, pay=0 and shows the true fee-only IRR.
+  const mT=$('mTab'); mT.innerHTML='';
+  const fixedPts=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.25,1.5,1.75,2.0,2.5,3.0];
+  // Build exact breakeven point directly (sh=0, pay=0)
+  let bePt=null;
+  if(isFinite(moicBE)&&moicBE>=0.1&&moicBE<=3.0){
+    const beCF=[-exposure];
+    for(let yr=1;yr<=actualTerm;yr++){
+      const r=rows.find(x=>x.yr===yr);
+      const reb=r?r.rec*rebPct:0;
+      beCF.push(r?(r.inflow-reb)+r.reinv-(yr===actualTerm?0:0):0);
+    }
+    beCF[beCF.length-1]+=exposure; // payout=0 at breakeven
+    bePt={m:moicBE, ppNav:postPDBase*moicBE, sh:0, pay:0, irr:IRR(beCF), trig:false, exact:true};
+  }
+  // Merge: fixed points + breakeven, sorted, de-duped (skip fixed points within 0.04 of BE)
+  const tableRows=[];
+  fixedPts.forEach(mv=>{
+    if(bePt&&Math.abs(mv-moicBE)<0.04) return; // replaced by exact BE row
+    const p=mpts.reduce((b,x)=>Math.abs(x.m-mv)<Math.abs(b.m-mv)?x:b,mpts[0]);
+    tableRows.push({...p, exact:false});
+  });
+  if(bePt) tableRows.push(bePt);
+  tableRows.sort((a,b)=>a.m-b.m);
+  tableRows.forEach(p=>{
+    const ic=isFinite(p.irr)?fP(p.irr,1):'—';
+    const icl=!isFinite(p.irr)?'':p.irr>=.15?'p':p.irr>=.08?'g':'n';
+    const beRow=p.exact;
+    mT.innerHTML+=`<tr${beRow?' style="background:#fef5e2;font-weight:600"':''}>
+      <td>${p.m.toFixed(2)}x${beRow?' ★ BE':''}</td>
+      <td>${fB(p.ppNav)}</td>
+      <td class="${p.sh>0?'n':''}">${p.sh>0?fB(p.sh):'—'}</td>
+      <td class="${p.pay>0?'n':''}">${p.pay>0?fB(p.pay):'—'}</td>
+      <td class="${icl}">${ic}</td>
+      <td>${p.trig?'<span style="color:var(--re)">▼ Payout</span>':'<span style="color:var(--gr)">▲ Safe</span>'}</td>
+    </tr>`;
+  });
+  $('beLbl').textContent=isFinite(moicBE)?moicBE.toFixed(2)+'x':'N/A';
+  $('beIRR').textContent=bePt&&isFinite(bePt.irr)?fP(bePt.irr):'—';
+
+  // NPV table
+  const nB=$('npvB'); nB.innerHTML='';
+  npvRows.forEach(r=>{
+    const sel=r.ty===actualTerm;
+    nB.innerHTML+=`<tr${sel?' style="background:var(--mu);font-weight:600"':''}>
+      <td>Year ${r.ty}${sel?' ◀':''}</td>
+      <td class="p">${fB(r.gf)}</td>
+      <td class="p">${fB(r.reinvTot)}</td>
+      <td class="n">(${fB(r.elPV)})</td>
+      <td class="${r.npv>=0?'p':'n'}">${fB(r.npv)}</td>
+      <td>${r.npv>=0?'<span style="color:var(--gr)">▲ Positive</span>':'<span style="color:var(--re)">▼ Negative</span>'}</td>
+    </tr>`;
+  });
+
+  // MOIC chart
+  const sel=parseFloat($('sMOIC').value);
+  drawChart(mpts, moicBE, sel);
+  updMOIC(mpts, sel);
+}
+
+// ── MOIC CHART ───────────────────────────────────────────────
+function drawChart(pts, be, sel) {
+  const svg=$('mChart');
+  const W=760,H=220,P={t:18,r:36,b:36,l:50};
+  const cw=W-P.l-P.r, ch=H-P.t-P.b;
+  const xmn=0.1, xmx=3.0;
+
+  const vs=pts.map(p=>p.irr).filter(isFinite);
+  if(!vs.length){svg.innerHTML='';return;}
+  const ymn=Math.min(-0.05,...vs);
+  const ymx=Math.max(0.35,...vs);
+
+  const xs=m   => P.l+(m-xmn)/(xmx-xmn)*cw;
+  const ys=irr => P.t+ch-(irr-ymn)/(ymx-ymn)*ch;
+  const cy=y   => Math.max(P.t-4,Math.min(P.t+ch+4,y));
+
+  let sD='',bD='',ss=false,bs=false;
+  pts.forEach(p=>{
+    if(!isFinite(p.irr)){ss=false;bs=false;return;}
+    const x=xs(p.m),y=cy(ys(p.irr));
+    if(!p.trig){ sD+=(ss?' L':'M')+x.toFixed(1)+','+y.toFixed(1); ss=true;bs=false; }
+    else       { bD+=(bs?' L':'M')+x.toFixed(1)+','+y.toFixed(1); bs=true;ss=false; }
+  });
+
+  const y15=cy(ys(0.15)), y0=cy(ys(0));
+  const xBE=isFinite(be)&&be>=xmn&&be<=xmx?xs(be):null;
+  const sp=pts.reduce((b,x)=>Math.abs(x.m-sel)<Math.abs(b.m-sel)?x:b,pts[0]);
+  const sx=xs(sp.m), sy=isFinite(sp.irr)?cy(ys(sp.irr)):null;
+
+  const yT=[];
+  for(let v=Math.ceil(ymn/0.05)*0.05;v<=ymx+.001;v=Math.round((v+.05)*1e4)/1e4){
+    if(Math.abs(v%.10)<.001) yT.push(+v.toFixed(2));
+  }
+
+  let h='';
+  h+=`<line x1="${P.l}" y1="${y0}" x2="${P.l+cw}" y2="${y0}" stroke="#c4a882" stroke-width="1" opacity=".4"/>`;
+  h+=`<line x1="${P.l}" y1="${y15}" x2="${P.l+cw}" y2="${y15}" stroke="#C49A3C" stroke-width="1.4" stroke-dasharray="5,4"/>`;
+  h+=`<text x="${P.l+cw+4}" y="${y15+4}" font-family="Inter" font-size="8.5" fill="#C49A3C">15%</text>`;
+  if(xBE){
+    h+=`<rect x="${P.l}" y="${P.t}" width="${xBE-P.l}" height="${ch}" fill="rgba(139,58,58,0.05)"/>`;
+    h+=`<line x1="${xBE}" y1="${P.t}" x2="${xBE}" y2="${P.t+ch}" stroke="#8B3A3A" stroke-width="1.4" stroke-dasharray="3,3"/>`;
+    h+=`<text x="${xBE-3}" y="${P.t+11}" font-family="Inter" font-size="8" fill="#8B3A3A" text-anchor="end">BE ${be.toFixed(2)}x</text>`;
+  }
+  yT.forEach(v=>{
+    const y=cy(ys(v));
+    if(y<P.t-2||y>P.t+ch+2)return;
+    h+=`<line x1="${P.l-3}" y1="${y}" x2="${P.l+cw}" y2="${y}" stroke="#e8d9c4" stroke-width="1"/>`;
+    h+=`<text x="${P.l-6}" y="${y+3.5}" font-family="Inter" font-size="8.5" fill="#9BA0A6" text-anchor="end">${(v*100).toFixed(0)}%</text>`;
+  });
+  [0.5,1.0,1.5,2.0,2.5,3.0].forEach(v=>{
+    const x=xs(v);
+    h+=`<line x1="${x}" y1="${P.t}" x2="${x}" y2="${P.t+ch+4}" stroke="#e8d9c4" stroke-width="1"/>`;
+    h+=`<text x="${x}" y="${P.t+ch+15}" font-family="Inter" font-size="8.5" fill="#9BA0A6" text-anchor="middle">${v.toFixed(1)}x</text>`;
+  });
+  h+=`<line x1="${P.l}" y1="${P.t}" x2="${P.l}" y2="${P.t+ch}" stroke="#8B6B4F" stroke-width="1.5"/>`;
+  h+=`<line x1="${P.l}" y1="${P.t+ch}" x2="${P.l+cw}" y2="${P.t+ch}" stroke="#8B6B4F" stroke-width="1.5"/>`;
+  h+=`<text x="${P.l+cw/2}" y="${H-2}" font-family="Inter" font-size="8.5" fill="#8B6B4F" text-anchor="middle">MOIC (post-PD NAV)</text>`;
+  h+=`<text x="10" y="${P.t+ch/2}" font-family="Inter" font-size="8.5" fill="#8B6B4F" text-anchor="middle" transform="rotate(-90,10,${P.t+ch/2})">NCGCL IRR</text>`;
+  if(bD) h+=`<path d="${bD}" fill="none" stroke="#C47A5A" stroke-width="2.3" stroke-linejoin="round" opacity=".85"/>`;
+  if(sD) h+=`<path d="${sD}" fill="none" stroke="#4A8C62" stroke-width="2.6" stroke-linejoin="round"/>`;
+  if(sy!==null){
+    h+=`<line x1="${sx}" y1="${P.t}" x2="${sx}" y2="${P.t+ch}" stroke="#5C3D2E" stroke-width="1" stroke-dasharray="3,2" opacity=".5"/>`;
+    h+=`<circle cx="${sx}" cy="${sy}" r="5.5" fill="#5C3D2E" stroke="#fff" stroke-width="2"/>`;
+    const il=isFinite(sp.irr)?fP(sp.irr,1):'N/A';
+    const tx=sx+(sx>W*.75?-76:9), ty2=Math.max(P.t,sy-27);
+    h+=`<rect x="${tx}" y="${ty2}" width="70" height="36" rx="3" fill="#5C3D2E" opacity=".92"/>`;
+    h+=`<text x="${tx+35}" y="${ty2+13}" font-family="Inter" font-size="8.5" fill="#E8D9C4" text-anchor="middle">${sp.m.toFixed(2)}x MOIC</text>`;
+    h+=`<text x="${tx+35}" y="${ty2+27}" font-family="Newsreader,serif" font-size="11" font-weight="600" fill="#E8C97A" text-anchor="middle">IRR ${il}</text>`;
+  }
+  svg.innerHTML=h;
+}
+
+function updMOIC(pts, sel) {
+  const p=pts.reduce((b,x)=>Math.abs(x.m-sel)<Math.abs(b.m-sel)?x:b,pts[0]);
+  $('lMOIC').textContent=p.m.toFixed(2)+'x';
+  $('mNAV').textContent=fB(p.ppNav);
+  $('mPay').textContent=p.pay>0?fB(p.pay):'None';
+  $('mPay').style.color=p.pay>0?'var(--re)':'var(--gr)';
+  $('mIRR').textContent=isFinite(p.irr)?fP(p.irr):'—';
+  $('mIRR').style.color=!isFinite(p.irr)?'var(--ash)':p.irr>=.15?'var(--gr)':p.irr>=.08?'var(--go)':'var(--re)';
+}
+
+function onMOIC() {
+  if(!window._mpts) return;
+  const sel=parseFloat($('sMOIC').value);
+  updMOIC(window._mpts, sel);
+  drawChart(window._mpts, window._mBE, sel);
+}
+
+// ── BOOT — three strategies to guarantee execution ──────────
+// 1. Immediate (script runs after body is parsed since it's inline at bottom)
+calc();
+// 2. DOMContentLoaded fallback
+document.addEventListener('DOMContentLoaded', calc);
+// 3. Short setTimeout for sandboxed iframes that defer DOMContentLoaded
+setTimeout(calc, 80);
+</script>
+</body>
+</html>
